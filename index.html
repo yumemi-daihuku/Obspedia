@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OBSpedia — なんでも百科事典</title>
+  <title>Obspedia — なんでも百科事典</title>
 
   <!-- ========================================================
     Google Fonts
@@ -663,6 +663,74 @@
     .article-body p { margin-bottom: 1em; }
     .article-body p:last-child { margin-bottom: 0; }
 
+    /* --文字-- → 大見出し（h2相当） */
+    .wiki-heading {
+      font-family: var(--font-title);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-main);
+      border-bottom: 1px solid var(--border-dark);
+      padding-bottom: 5px;
+      margin: 1.4em 0 0.6em;
+    }
+
+    /* **文字** → 太字 */
+    .wiki-bold { font-weight: 700; }
+
+    /* `文字` → 圏点（ルビで実装。ブラウザ対応の安定した手法） */
+    .wiki-sesame {
+      /* CSS圏点（傍点）：「ごま点」スタイル */
+      text-emphasis: sesame;
+      -webkit-text-emphasis: sesame;
+      text-emphasis-position: over right;
+      -webkit-text-emphasis-position: over right;
+    }
+
+    /* 脚注番号（上付き文字として表示） */
+    .footnote-ref {
+      color: var(--link-exists);
+      cursor: pointer;
+      font-size: 0.75em;
+      vertical-align: super;
+      line-height: 0;
+      text-decoration: none;
+    }
+    .footnote-ref:hover { color: var(--link-hover); text-decoration: underline; }
+
+    /* 脚注セクション（記事末尾） */
+    .footnote-section {
+      margin-top: 36px;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    .footnote-section-title {
+      font-family: var(--font-title);
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text-muted);
+    }
+
+    .footnote-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .footnote-list li {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* 脚注番号の太字部分 */
+    .footnote-list li strong {
+      color: var(--text-main);
+      margin-right: 4px;
+    }
+
     /* 内部リンク（記事あり） → 青 */
     .wikilink-exists {
       color: var(--link-exists);
@@ -928,7 +996,7 @@
 
       <!-- ロゴ：クリックでホームに戻る -->
       <div class="header-logo-area" onclick="showPage('home')">
-        <span class="logo-main">OBSpedia</span>
+        <span class="logo-main">Obspedia</span>
         <span class="logo-sub">なんでも百科事典</span>
       </div>
 
@@ -948,6 +1016,7 @@
       <!-- 右側のナビボタン -->
       <div class="header-nav">
         <button onclick="showPage('home')">🏠 ホーム</button>
+        <button onclick="goRandomPage()">🎲 ランダム</button>
         <button onclick="showNewArticleForm()">＋ 新規記事</button>
       </div>
 
@@ -979,6 +1048,7 @@
       <div class="sidebar-section">
         <div class="sidebar-heading">操作</div>
         <span class="sidebar-nav-item" onclick="showNewArticleForm()">＋ 新規記事を作成</span>
+        <span class="sidebar-nav-item" onclick="goRandomPage()">🎲 ランダムページ</span>
       </div>
     </aside>
 
@@ -992,7 +1062,7 @@
 
         <!-- ヒーローバナー -->
         <div class="home-hero">
-          <div class="home-hero-title">OBSpedia</div>
+          <div class="home-hero-title">Obspedia</div>
           <div class="home-hero-sub">誰でも編集できる、なんでも百科事典</div>
           <!-- ホームページ専用の大きい検索バー -->
           <div class="home-search-bar">
@@ -1113,12 +1183,20 @@
         <!-- 記法ガイドのヒントボックス -->
         <div class="syntax-hint">
           <strong>📝 記法ガイド</strong><br>
-          内部リンク: <code>[[記事名]]</code>
-          　— 記事が存在すれば<span style="color:var(--link-exists);">青</span>、
-          なければ<span style="color:var(--link-missing);">赤</span>で表示されます<br>
+          内部リンク: <code>[[飛ばしたいタイトル/表示する文字]]</code>
+          　— 記事が存在すれば<span style="color:var(--link-exists);">青</span>、なければ<span style="color:var(--link-missing);">赤</span>で表示<br>
+          　※ スラッシュなし <code>[[記事名]]</code> も可（タイトルをそのまま表示）<br>
           外部リンク: <code>[https://example.com リンクテキスト]</code>
-          　— 外部サイトへのリンクを作れます<br>
-          段落の区切り: 空行（Enterを2回）を入れると段落が分かれます
+          　— 外部サイトへのリンク<br>
+          大見出し: <code>--文字--</code>
+          　— 大きな見出しとして表示されます<br>
+          太字: <code>**文字**</code>
+          　— <strong>太字</strong>で表示されます<br>
+          圏点: <code>`文字`</code>
+          　— 文字に傍点（ごま点）が打たれます<br>
+          脚注: <code>文字&lt;脚注の内容&gt;</code>
+          　— 文字に番号が付き、ページ末尾の「脚注」欄に表示<br>
+          段落区切り: 空行（Enterを2回）で段落が分かれます
         </div>
 
         <label class="form-label">タイトル <span style="color:var(--btn-danger-bg);">*</span></label>
@@ -1128,7 +1206,7 @@
         <textarea class="form-field form-summary-field" id="form-summary" placeholder="記事の概要を1〜2文で入力してください（省略可）"></textarea>
 
         <label class="form-label">本文</label>
-        <textarea class="form-field form-body-field" id="form-body" placeholder="本文を入力してください...&#10;&#10;例: この記事は [[関連記事]] と関係があります。&#10;詳細は [https://example.com 公式サイト] を参照してください。"></textarea>
+        <textarea class="form-field form-body-field" id="form-body" placeholder="本文を入力してください...&#10;&#10;例:&#10;--大見出し--&#10;この記事は [[関連記事/関連する記事]] と関係があります。&#10;**重要な文字** や `圏点をつける文字` も使えます。&#10;詳細は [https://example.com 公式サイト] を参照してください。&#10;脚注を入れたい文字<これが脚注として表示されます>"></textarea>
 
         <div class="form-actions">
           <button class="btn btn-primary"   onclick="saveArticle()">💾 保存する</button>
@@ -1252,9 +1330,17 @@
         const a       = articles[id];
         const title   = escHtml(a.title   || "無題");
         // 概要：設定されていれば使用、なければ本文の先頭を使用
+        // 内部リンク [[タイトル/表示文字]] → 表示文字だけ残す（スラッシュ対応）
         const rawSummary = a.summary
           ? a.summary
-          : (a.body || "").replace(/\[\[([^\]]+)\]\]/g, "$1").replace(/\[https?:\/\/[^\]]+\]/g, "").trim();
+          : (a.body || "")
+              .replace(/\[\[(?:[^\]/]+\/)?([^\]]+)\]\]/g, "$1")  // [[T/表示]] → 表示, [[T]] → T
+              .replace(/\[https?:\/\/[^\]]+\]/g, "")             // 外部リンク除去
+              .replace(/--([^-]+)--/g, "$1")                     // 見出し記法除去
+              .replace(/\*\*([^*]+)\*\*/g, "$1")                 // 太字記法除去
+              .replace(/`([^`]+)`/g, "$1")                       // 圏点記法除去
+              .replace(/<[^>]+>/g, "")                           // 脚注 <...> 除去
+              .trim();
         // カードには最大100文字まで表示
         const summary = escHtml(rawSummary.slice(0, 100)) + (rawSummary.length > 100 ? "…" : "");
         const date    = a.updatedAt
@@ -1359,7 +1445,14 @@
         // 概要の生成（設定概要 → 本文の先頭 の優先順）
         const rawSummary = article.summary
           ? article.summary
-          : (article.body || "").replace(/\[\[([^\]]+)\]\]/g, "$1").replace(/\[https?:\/\/[^\]]+\]/g, "").trim();
+          : (article.body || "")
+              .replace(/\[\[(?:[^\]/]+\/)?([^\]]+)\]\]/g, "$1")
+              .replace(/\[https?:\/\/[^\]]+\]/g, "")
+              .replace(/--([^-]+)--/g, "$1")
+              .replace(/\*\*([^*]+)\*\*/g, "$1")
+              .replace(/`([^`]+)`/g, "$1")
+              .replace(/<[^>]+>/g, "")
+              .trim();
         const summary = highlightKeyword(escHtml(rawSummary.slice(0, 120)) + (rawSummary.length > 120 ? "…" : ""), query);
 
         return `
@@ -1405,46 +1498,104 @@
     // --------------------------------------------------------
     // ■ Wikiテキストパーサー
     //
-    // 変換ルール:
-    //   [[記事名]]         → 内部リンク（記事あり=青 / なし=赤）
-    //   [https://... 文字] → 外部リンク（新しいタブで開く）
-    //   空行               → 段落区切り <p>
+    // 変換ルール（処理順序は重要：順番を変えないこと）:
+    //   1. HTMLエスケープ（XSS防止）
+    //   2. 外部リンク  [URL テキスト]
+    //   3. 内部リンク  [[タイトル/表示文字]] または [[タイトル]]
+    //   4. 脚注        文字<脚注内容>
+    //   5. 大見出し    --文字--
+    //   6. 太字        **文字**
+    //   7. 圏点        `文字`
+    //   8. 段落区切り（空行）
+    //   9. 脚注セクションを末尾に追加
     //
-    // セキュリティ対策:
-    //   - ユーザー入力は必ず escHtml() でエスケープしてからパース
-    //   - 外部URLは https?:// のみ許可（javascript: 等を排除）
+    // セキュリティ:
+    //   - ユーザー入力は必ず escHtml() でエスケープしてから処理
+    //   - 外部URLは https?:// のみ許可
     // --------------------------------------------------------
     function parseWikiText(text) {
+      // 脚注を収集する配列（パース中に順番通り追加される）
+      const footnotes = [];
+
       // Step1: HTMLエスケープ（XSS防止のために最初に実施）
       let html = escHtml(text);
 
-      // Step2: 外部リンク [URL テキスト] → <a>タグ
+      // Step2: 外部リンク [https://... テキスト] → <a>タグ
+      // 例: [https://example.com サンプルサイト]
       html = html.replace(
         /\[((https?:\/\/[^\s\]]+))\s+([^\]]+)\]/g,
-        (_, url, _url2, label) => {
+        (_, url, _u, label) => {
           if (!/^https?:\/\//i.test(url)) return escHtml(url);
           return `<a href="${url}" class="external-link" target="_blank" rel="noopener noreferrer">${label}</a>`;
         }
       );
 
-      // Step3: 内部リンク [[記事名]] → クリッカブルなspan
-      html = html.replace(/\[\[([^\]]+)\]\]/g, (_, name) => {
-        const existId = findArticleByTitle(name);
-        const escapedName = escHtml(name);
+      // Step3: 内部リンク
+      // 【新仕様】[[飛ばしたいタイトル/表示する文字]] → 表示文字でリンク
+      // 【旧仕様互換】[[タイトル]] → タイトルをそのまま表示してリンク
+      html = html.replace(/\[\[([^\]]+)\]\]/g, (_, inner) => {
+        // スラッシュで「タイトル/表示文字」に分割
+        const slashIdx  = inner.indexOf("/");
+        const linkTitle = slashIdx !== -1 ? inner.slice(0, slashIdx).trim() : inner.trim();
+        const dispText  = slashIdx !== -1 ? inner.slice(slashIdx + 1).trim() : inner.trim();
+
+        const existId = findArticleByTitle(linkTitle);
+
         if (existId) {
           // 記事が存在する → 青リンク（クリックで記事に遷移）
-          return `<span class="wikilink-exists" onclick="window.loadArticle('${existId}')" title="${escapedName}">${escapedName}</span>`;
+          return `<span class="wikilink-exists" onclick="window.loadArticle('${existId}')" title="${escHtml(linkTitle)}">${escHtml(dispText)}</span>`;
         } else {
           // 記事が存在しない → 赤テキスト（クリック不可）
-          return `<span class="wikilink-missing" title="「${escapedName}」の記事はまだ作成されていません">${escapedName}</span>`;
+          return `<span class="wikilink-missing" title="「${escHtml(linkTitle)}」の記事はまだ作成されていません">${escHtml(dispText)}</span>`;
         }
       });
 
-      // Step4: 空行で段落分割
+      // Step4: 脚注 文字<脚注内容>
+      // 例: 日本語<日本語とは日本で使われる言語> → 「日本語」に上付き番号が付く
+      // 注意: <...> はエスケープ済みなので &lt;...&gt; にマッチさせる
+      html = html.replace(/([^&\s][^&]*?)&lt;([^&][^<>]*)&gt;/g, (_, before, note) => {
+        footnotes.push(note.trim());
+        const num = footnotes.length;
+        // クリックで脚注セクションの該当番号へスクロール
+        return `${before}<a class="footnote-ref" id="fnref-${num}" href="#fn-${num}" onclick="event.preventDefault();document.getElementById('fn-${num}').scrollIntoView({behavior:'smooth'})">[${num}]</a>`;
+      });
+
+      // Step5: 大見出し --文字-- → <div class="wiki-heading">
+      // 例: --はじめに-- → 大きな見出し
+      html = html.replace(/--([^-\n]+)--/g, (_, content) => {
+        return `</p><div class="wiki-heading">${content}</div><p>`;
+      });
+
+      // Step6: 太字 **文字** → <strong>
+      // 例: **重要** → 太字
+      html = html.replace(/\*\*([^*\n]+)\*\*/g, (_, content) => {
+        return `<strong class="wiki-bold">${content}</strong>`;
+      });
+
+      // Step7: 圏点 `文字` → <span class="wiki-sesame">
+      // 例: `強調したい言葉` → ごま点付き
+      html = html.replace(/`([^`\n]+)`/g, (_, content) => {
+        return `<span class="wiki-sesame">${content}</span>`;
+      });
+
+      // Step8: 空行で段落分割
       html = html
         .split(/\n\s*\n/)
         .map(para => `<p>${para.replace(/\n/g, "<br>")}</p>`)
         .join("\n");
+
+      // Step9: 脚注がある場合、末尾に脚注セクションを追加
+      if (footnotes.length > 0) {
+        const fnItems = footnotes.map((note, i) => {
+          const num = i + 1;
+          return `<li id="fn-${num}"><strong>[${num}]</strong>${escHtml(note)}</li>`;
+        }).join("");
+        html += `
+          <div class="footnote-section">
+            <div class="footnote-section-title">脚注</div>
+            <ol class="footnote-list">${fnItems}</ol>
+          </div>`;
+      }
 
       return html;
     }
@@ -1654,6 +1805,21 @@
       } else {
         showPage("home");
       }
+    };
+
+    // --------------------------------------------------------
+    // ■ ランダムページに移動
+    // 存在する記事IDの中からランダムに1件選んで表示する
+    // --------------------------------------------------------
+    window.goRandomPage = function() {
+      const ids = Object.keys(state.allArticles);
+      if (ids.length === 0) {
+        alert("まだ記事がありません。最初の記事を作成してください。");
+        return;
+      }
+      // Math.random() でランダムなインデックスを選択
+      const randomId = ids[Math.floor(Math.random() * ids.length)];
+      window.loadArticle(randomId);
     };
 
     // --------------------------------------------------------
