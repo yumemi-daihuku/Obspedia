@@ -1204,6 +1204,8 @@
         <!-- onclick で showPage() を呼ぶ -->
         <span class="sidebar-nav-item" id="nav-home"   onclick="showPage('home')">🏠 メインページ</span>
         <span class="sidebar-nav-item" id="nav-search" onclick="showPage('search')" style="display:none;">🔍 検索結果</span>
+        <span class="sidebar-nav-item" id="nav-about"  onclick="showPage('about')">📖 このサイトについて</span>
+        <span class="sidebar-nav-item" id="nav-terms"  onclick="showPage('terms')">📜 利用規約</span>
       </div>
 
       <div class="sidebar-section">
@@ -1403,7 +1405,126 @@
         </div>
       </div><!-- /page-history -->
 
+      <!-- ======================================================
+        【ページ6】このサイトについて
+        ★ 以下の内容は仮のものです。自由に書き換えてください。
+      ====================================================== -->
+      <div id="page-about" class="page">
 
+        <div class="article-header">
+          <h1 class="article-title-text">📖 このサイトについて</h1>
+        </div>
+
+        <div class="article-body">
+
+          <div class="wiki-heading">Obspedia とは</div>
+          <p>
+            <strong class="wiki-bold">Obspedia（オブスペディア）</strong>は、性に多感なドスケベクソガキの為に暇を持て余したドスケベが作ったドスケベの為のドスケベ百科です。性への知識を渇望する子供達に引導を渡すために作成しました。<br>
+            英語で「わいせつな」を意味する「obscene」と、「pedia」がサイト名の由来です。
+            記事は全てドスケベな内容でなくてはなりません。性欲に忠実に生きましょう。
+          </p>
+
+          <div class="wiki-heading">運営について</div>
+          <p>
+            このサイトはカイロスが運営しています。<br>
+            記事の内容はユーザーによって自由に投稿・編集されるものであり、
+            運営者がすべての内容を監修しているわけではありません。が、私がドスケベでないと感じた記事は削除させて頂きます。
+          </p>
+
+          <div class="wiki-heading">使用技術</div>
+          <p>
+            Obspedia は以下の技術を使って構築されています。
+          </p>
+          <p>
+            ・フロントエンド: HTML / CSS / JavaScript（バニラ）<br>
+            ・データベース: Firebase Realtime Database<br>
+            ・ホスティング: GitHub Pages
+            ・サポート: Claude
+          </p>
+
+          <div class="wiki-heading">お問い合わせ</div>
+          <p>
+            ご意見・ご要望・不具合の報告などは、LINEにて管理者までご連絡ください。
+            
+          </p>
+
+           <div class="wiki-heading">運営者からの言葉</div>
+          <p>
+            どうも。カイロスです。本サイトに足を運んで頂きありがとうございます。まぁ......見ての通りイカれた百科事典ですね。
+            本サイトは「性に飢えたクソガキ」を主なターゲット層にしていますが、勿論他の方々も大歓迎です。というか来てください。お願いします。人手が足りないです。<br>
+            まだ自分が下の毛も生えてないようなクソガキだった時は(今もクソガキですが)、「このワードってどういう意味だ」と感じる事が多かったです。調べたいけど調べたのがバレたら終わるというあのもどかしい気持ち。あんな思いをする子供たちを増やすわけにはいきません。
+          </p>
+
+        </div>
+      </div><!-- /page-about -->
+
+      <!-- ======================================================
+        【ページ7】利用規約
+        ★ 以下の内容は仮のものです。自由に書き換えてください。
+      ====================================================== -->
+      <div id="page-terms" class="page">
+
+        <div class="article-header">
+          <h1 class="article-title-text">📜 利用規約</h1>
+        </div>
+
+        <div class="article-body">
+
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:1.5em;">
+            最終更新日：2025年4月7日
+          </p>
+
+          <div class="wiki-heading">第1条</div>
+          <p>
+            本利用規約（以下「本規約」）は、Obspedia（以下「当サイト」）の利用に関する条件を定めるものです。
+            当サイトをご利用になる前に、本規約をよくお読みください。
+            当サイトを利用した時点で、本規約に同意したものとみなします。
+          </p>
+
+          <div class="wiki-heading">第2条（禁止事項）</div>
+          <p>
+            利用者は、以下の行為を行ってはなりません。
+          </p>
+          <p>
+            ・他者の権利（著作権・肖像権・プライバシー権など）を侵害する行為<br>
+            ・虚偽・誇大・誤解を招く情報の投稿<br>
+            ・特定の個人・団体への誹謗中傷<br>
+            ・法令に違反する行為、またはその恐れのある行為<br>
+            ・当サイトの運営を妨害する行為<br>
+            ・ドスケベではない記事の作成<br>
+            ・その他、管理者が不適切と判断する行為
+          </p>
+
+          <div class="wiki-heading">第3条（投稿コンテンツ）</div>
+          <p>
+            利用者が投稿した記事・コメントの著作権は、投稿者に帰属します。
+            ただし、当サイトに掲載することで、管理者は当該コンテンツをサイト上で表示・利用する権利を有するものとします。
+          </p>
+          <p>
+            管理者は、禁止事項に違反するコンテンツを予告なく削除、編集できるものとします。
+          </p>
+
+          <div class="wiki-heading">第4条（免責事項）</div>
+          <p>
+            当サイトに掲載される情報の正確性・完全性・有用性について、管理者は一切の保証を行いません。
+            また、当サイトの利用によって生じたいかなる損害についても、管理者は責任を負いません。
+          </p>
+
+          <div class="wiki-heading">第5条（規約の変更）</div>
+          <p>
+            管理者は、必要に応じて本規約を予告なく変更する場合があります。
+            変更後の規約は当サイトに掲載された時点で効力を生じるものとします。
+          </p>
+
+          <div class="wiki-heading">第6条（準拠法）</div>
+          <p>
+            本規約は日本法に準拠し、解釈されるものとします。
+          </p>
+
+        </div>
+      </div><!-- /page-terms -->
+
+    </main>
   </div><!-- /layout -->
 
   <!-- ============================================================
