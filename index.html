@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Obspedia — 性に多感な貴方へのドスケベ百科事典</title>
+  <title>Obspedia — なんでも百科事典</title>
 
   <!-- ========================================================
     Google Fonts
@@ -910,6 +910,175 @@
     .comment-delete-btn:hover { background: var(--btn-danger-bg); color: #fff; }
 
     /* ============================================================
+      ■ 編集履歴ページ
+    ============================================================ */
+    .history-header {
+      border-bottom: 2px solid var(--border-dark);
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+    }
+
+    .history-page-title {
+      font-family: var(--font-title);
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .history-article-name {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* 履歴なしメッセージ */
+    .history-empty {
+      background: var(--bg-content);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 32px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* 履歴アイテムのリスト */
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* 各履歴アイテム */
+    .history-item {
+      background: var(--bg-content);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    /* 履歴アイテムのヘッダー（クリックで展開） */
+    .history-item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+      gap: 12px;
+    }
+    .history-item-header:hover { background: #faf7f0; }
+
+    .history-item-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* 履歴の「第N版」ラベル */
+    .history-ver-label {
+      font-family: var(--font-title);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* 履歴の日時表示 */
+    .history-date {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* 履歴アイテムのアクションボタン群 */
+    .history-item-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    /* 折りたたみコンテンツ（差分プレビュー） */
+    .history-item-body {
+      display: none;    /* デフォルト非表示 */
+      border-top: 1px solid var(--border);
+      padding: 14px 16px;
+      background: #fdfbf7;
+    }
+    .history-item-body.open { display: block; }
+
+    .history-preview-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    /* 履歴本文のプレビュー（スクロール可能な固定高さ） */
+    .history-preview-text {
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--text-main);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 10px 12px;
+      max-height: 200px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      font-family: 'Courier New', monospace;
+    }
+
+    /* 現在の版バッジ（最新版の表示） */
+    .badge-current {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 10px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    /* ============================================================
+      ■ 管理者パスワード入力モーダル（汎用）
+    ============================================================ */
+    .admin-modal-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .admin-pw-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border-dark);
+      border-radius: 4px;
+      font-family: var(--font-serif);
+      font-size: 14px;
+      text-align: center;
+      letter-spacing: 3px;   /* パスワードを読みにくく */
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      margin-bottom: 8px;
+    }
+    .admin-pw-input:focus {
+      border-color: var(--accent-light);
+      box-shadow: 0 0 0 3px rgba(200,162,39,0.15);
+    }
+
+    /* パスワードが間違ったときのエラーメッセージ */
+    .admin-pw-error {
+      font-size: 12px;
+      color: var(--btn-danger-bg);
+      margin-bottom: 12px;
+      min-height: 18px;  /* エラー非表示でもレイアウトが崩れないようにする */
+    }
+
+    /* ============================================================
       ■ 削除確認モーダル
     ============================================================ */
     .modal-overlay {
@@ -997,7 +1166,7 @@
       <!-- ロゴ：クリックでホームに戻る -->
       <div class="header-logo-area" onclick="showPage('home')">
         <span class="logo-main">Obspedia</span>
-        <span class="logo-sub">性に多感な貴方へのドスケベ百科事典</span>
+        <span class="logo-sub">なんでも百科事典</span>
       </div>
 
       <!-- 検索バー -->
@@ -1063,7 +1232,7 @@
         <!-- ヒーローバナー -->
         <div class="home-hero">
           <div class="home-hero-title">Obspedia</div>
-          <div class="home-hero-sub">誰でも編集できる性に多感な貴方へのドスケベ百科事典</div>
+          <div class="home-hero-sub">誰でも編集できる、なんでも百科事典</div>
           <!-- ホームページ専用の大きい検索バー -->
           <div class="home-search-bar">
             <input
@@ -1149,6 +1318,7 @@
           <h1 class="article-title-text" id="view-title"></h1>
           <div class="article-actions">
             <button class="btn btn-primary" onclick="showEditForm()">✏️ 編集する</button>
+            <button class="btn"             onclick="requestHistoryView()">🕘 編集履歴</button>
             <button class="btn btn-danger"  onclick="confirmDelete()">🗑️ 削除する</button>
           </div>
         </div>
@@ -1214,19 +1384,87 @@
         </div>
       </div><!-- /page-form -->
 
-    </main>
+      <!-- ======================================================
+        【ページ5】編集履歴ページ（管理者パスワード認証後に表示）
+      ====================================================== -->
+      <div id="page-history" class="page">
+        <div class="history-header">
+          <div class="history-page-title">🕘 編集履歴</div>
+          <div class="history-article-name" id="history-article-name"></div>
+        </div>
+        <div style="margin-bottom:14px;">
+          <button class="btn btn-secondary" onclick="window.loadArticle(state.currentArticleId)">
+            ← 記事に戻る
+          </button>
+        </div>
+        <!-- JavaScriptが履歴アイテムを挿入する -->
+        <div class="history-list" id="history-list">
+          <div class="loading-msg">履歴を読み込み中...</div>
+        </div>
+      </div><!-- /page-history -->
+
+
   </div><!-- /layout -->
 
   <!-- ============================================================
-    ■ 削除確認モーダル
+    ■ 削除確認モーダル（管理者パスワード入力付き）
   ============================================================ -->
   <div class="modal-overlay" id="delete-modal">
     <div class="modal">
+      <div class="admin-modal-icon">🗑️</div>
       <h3>記事を削除しますか？</h3>
       <p id="delete-modal-msg">この操作は取り消せません。<br>記事に付いたコメントも同時に削除されます。</p>
+      <!-- 削除には管理者パスワードが必要 -->
+      <input
+        class="admin-pw-input"
+        type="password"
+        id="delete-pw-input"
+        placeholder="管理者パスワードを入力"
+        onkeydown="if(event.key==='Enter') deleteArticle()"
+      />
+      <div class="admin-pw-error" id="delete-pw-error"></div>
       <div class="modal-actions">
         <button class="btn btn-danger"    onclick="deleteArticle()">削除する</button>
-        <button class="btn btn-secondary" onclick="document.getElementById('delete-modal').classList.remove('active')">キャンセル</button>
+        <button class="btn btn-secondary" onclick="closeDeleteModal()">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+    ■ 管理者パスワード認証モーダル（編集履歴閲覧用）
+    このモーダルはパスワード確認のみ行い、認証後に履歴ページを開く
+  ============================================================ -->
+  <div class="modal-overlay" id="admin-modal">
+    <div class="modal">
+      <div class="admin-modal-icon">🔐</div>
+      <h3>管理者認証</h3>
+      <p>編集履歴の閲覧には<br>管理者パスワードが必要です。</p>
+      <input
+        class="admin-pw-input"
+        type="password"
+        id="admin-pw-input"
+        placeholder="パスワードを入力"
+        onkeydown="if(event.key==='Enter') submitAdminPassword()"
+      />
+      <div class="admin-pw-error" id="admin-pw-error"></div>
+      <div class="modal-actions">
+        <button class="btn btn-primary"   onclick="submitAdminPassword()">確認</button>
+        <button class="btn btn-secondary" onclick="closeAdminModal()">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+    ■ 履歴復元確認モーダル
+  ============================================================ -->
+  <div class="modal-overlay" id="restore-modal">
+    <div class="modal">
+      <div class="admin-modal-icon">⏪</div>
+      <h3>この版に戻しますか？</h3>
+      <p id="restore-modal-msg">現在の内容はこの操作で上書きされます。<br>元に戻した内容は新しい編集履歴として保存されます。</p>
+      <div class="modal-actions">
+        <button class="btn btn-primary"   onclick="executeRestore()">この版に戻す</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('restore-modal').classList.remove('active')">キャンセル</button>
       </div>
     </div>
   </div>
@@ -1610,7 +1848,14 @@
 
     // --------------------------------------------------------
     // ■ 記事の保存（新規作成 / 更新）
+    //
+    // 更新時の編集履歴保存ロジック：
+    //   1. 保存前の現在の記事内容をスナップショットとして取得
+    //   2. Firebase の histories/{articleId} に push() で追記
+    //   3. 履歴が MAX_HISTORY 件を超えた場合、最古のものを削除
     // --------------------------------------------------------
+    const MAX_HISTORY = 5; // 保持する編集履歴の最大件数
+
     window.saveArticle = async function() {
       const title   = document.getElementById("form-title").value.trim();
       const summary = document.getElementById("form-summary").value.trim();
@@ -1625,17 +1870,24 @@
       const now = Date.now();
 
       if (state.editMode && state.currentArticleId) {
-        // --- 更新：既存記事IDに上書き保存 ---
+        // --- 更新：まず編集前の状態を履歴として保存 ---
+        const oldArticle = state.allArticles[state.currentArticleId];
+        if (oldArticle) {
+          await saveHistory(state.currentArticleId, oldArticle, now);
+        }
+
+        // 記事本体を上書き保存
         await set(ref(db, `articles/${state.currentArticleId}`), {
           title,
           summary,
           body,
-          createdAt: state.allArticles[state.currentArticleId]?.createdAt || now,
+          createdAt: oldArticle?.createdAt || now,
           updatedAt: now,
         });
         window.loadArticle(state.currentArticleId);
       } else {
         // --- 新規作成：push() で Firebase がユニークIDを自動生成 ---
+        // 新規作成時は履歴なし
         const newRef = push(ref(db, "articles"));
         await set(newRef, { title, summary, body, createdAt: now, updatedAt: now });
         window.loadArticle(newRef.key);
@@ -1643,24 +1895,96 @@
     };
 
     // --------------------------------------------------------
-    // ■ 記事の削除
+    // ■ 編集履歴の保存（saveArticle から呼び出す内部関数）
+    //
+    // データ構造（Firebase）:
+    //   histories/
+    //     {articleId}/
+    //       {historyId}/        ← push() が自動生成するID
+    //         title: "..."
+    //         summary: "..."
+    //         body: "..."
+    //         savedAt: 1234567  ← 保存時刻（ミリ秒）
+    //
+    // --------------------------------------------------------
+    async function saveHistory(articleId, articleSnapshot, now) {
+      const historiesRef = ref(db, `histories/${articleId}`);
+
+      // 現在の履歴を取得して件数を確認
+      const snap = await get(historiesRef);
+      const existing = snap.val() || {};
+      const ids = Object.keys(existing);
+
+      // MAX_HISTORY 件を超える場合、最古の履歴を削除する
+      // （push()で生成されるIDは時系列順になっているためソートが使える）
+      if (ids.length >= MAX_HISTORY) {
+        ids.sort(); // Firebase のキーは時系列昇順なので sort() で最古が先頭
+        const toDelete = ids.slice(0, ids.length - MAX_HISTORY + 1);
+        await Promise.all(
+          toDelete.map(id => remove(ref(db, `histories/${articleId}/${id}`)))
+        );
+      }
+
+      // 編集前の状態を新しい履歴エントリとして追加
+      const newHistRef = push(historiesRef);
+      await set(newHistRef, {
+        title:   articleSnapshot.title   || "",
+        summary: articleSnapshot.summary || "",
+        body:    articleSnapshot.body    || "",
+        savedAt: now,
+      });
+    }
+
+    // --------------------------------------------------------
+    // ■ 記事削除の確認モーダルを開く
     // --------------------------------------------------------
     window.confirmDelete = function() {
       if (!state.currentArticleId) return;
       const title = state.allArticles[state.currentArticleId]?.title || "この記事";
       document.getElementById("delete-modal-msg").innerHTML =
         `「${escHtml(title)}」を削除します。<br>この操作は取り消せません。コメントも同時に削除されます。`;
+      // 入力欄とエラーをリセット
+      document.getElementById("delete-pw-input").value = "";
+      document.getElementById("delete-pw-error").textContent = "";
       document.getElementById("delete-modal").classList.add("active");
+      // フォーカスをパスワード欄に当てる
+      setTimeout(() => document.getElementById("delete-pw-input").focus(), 100);
     };
+
+    window.closeDeleteModal = function() {
+      document.getElementById("delete-modal").classList.remove("active");
+      document.getElementById("delete-pw-input").value = "";
+      document.getElementById("delete-pw-error").textContent = "";
+    };
+
+    // --------------------------------------------------------
+    // ■ 記事の削除（パスワード検証付き）
+    //
+    // セキュリティ注記：
+    //   パスワードはクライアントサイドでのみ検証しています。
+    //   Firebase Security Rules による保護も別途設定することを推奨します。
+    //   ここでのパスワード管理はアクセス抑止が目的です。
+    // --------------------------------------------------------
+    const ADMIN_PASSWORD = "kairosupassword"; // ← パスワードはここで設定
 
     window.deleteArticle = async function() {
       if (!state.currentArticleId) return;
-      document.getElementById("delete-modal").classList.remove("active");
 
-      // 記事とそのコメントを同時削除
+      const inputPw = document.getElementById("delete-pw-input").value;
+      if (inputPw !== ADMIN_PASSWORD) {
+        document.getElementById("delete-pw-error").textContent = "パスワードが違います。";
+        document.getElementById("delete-pw-input").value = "";
+        document.getElementById("delete-pw-input").focus();
+        return;
+      }
+
+      closeDeleteModal();
+
+      // 記事本体・コメント・編集履歴を同時に削除
       await Promise.all([
         remove(ref(db, `articles/${state.currentArticleId}`)),
         remove(ref(db, `comments/${state.currentArticleId}`)),
+        remove(ref(db, `histories/${state.currentArticleId}`)),
       ]);
 
       state.currentArticleId = null;
@@ -1808,6 +2132,163 @@
     };
 
     // --------------------------------------------------------
+    // ■ 管理者パスワード認証モーダル（編集履歴閲覧用）
+    //
+    // 処理フロー：
+    //   1. 「編集履歴」ボタンクリック → requestHistoryView() で認証モーダルを開く
+    //   2. パスワード入力 → submitAdminPassword() で検証
+    //   3. 正しければ履歴ページを表示
+    // --------------------------------------------------------
+    window.requestHistoryView = function() {
+      if (!state.currentArticleId) return;
+      // 入力欄をリセットしてモーダルを開く
+      document.getElementById("admin-pw-input").value = "";
+      document.getElementById("admin-pw-error").textContent = "";
+      document.getElementById("admin-modal").classList.add("active");
+      setTimeout(() => document.getElementById("admin-pw-input").focus(), 100);
+    };
+
+    window.submitAdminPassword = function() {
+      const inputPw = document.getElementById("admin-pw-input").value;
+      if (inputPw !== ADMIN_PASSWORD) {
+        document.getElementById("admin-pw-error").textContent = "パスワードが違います。";
+        document.getElementById("admin-pw-input").value = "";
+        document.getElementById("admin-pw-input").focus();
+        return;
+      }
+      closeAdminModal();
+      showHistoryPage(state.currentArticleId);
+    };
+
+    window.closeAdminModal = function() {
+      document.getElementById("admin-modal").classList.remove("active");
+      document.getElementById("admin-pw-input").value = "";
+      document.getElementById("admin-pw-error").textContent = "";
+    };
+
+    // --------------------------------------------------------
+    // ■ 編集履歴ページを表示
+    // --------------------------------------------------------
+    async function showHistoryPage(articleId) {
+      const article = state.allArticles[articleId];
+      if (!article) return;
+
+      // ページ上部の記事名を設定
+      document.getElementById("history-article-name").textContent =
+        `対象記事: 「${article.title || "無題"}」`;
+
+      showPage("history");
+
+      // Firebase から履歴を取得
+      const snap = await get(ref(db, `histories/${articleId}`));
+      const histData = snap.val() || {};
+      const histIds = Object.keys(histData).sort().reverse(); // 新しい順
+
+      const listEl = document.getElementById("history-list");
+
+      if (histIds.length === 0) {
+        listEl.innerHTML = `
+          <div class="history-empty">
+            📭 この記事にはまだ編集履歴がありません。<br>
+            <small style="display:block;margin-top:8px;">記事を編集して保存すると、編集前の状態が履歴として保存されます。</small>
+          </div>`;
+        return;
+      }
+
+      // 履歴アイテムをレンダリング
+      // 第1版が最古、第N版が最新直前（現在は記事本体）
+      const totalVersions = histIds.length;
+
+      listEl.innerHTML = histIds.map((hid, i) => {
+        const h = histData[hid];
+        const versionNum = totalVersions - i; // 新しいものを大きい番号に
+        const dateStr = h.savedAt
+          ? new Date(h.savedAt).toLocaleString("ja-JP", { dateStyle:"short", timeStyle:"short" })
+          : "日時不明";
+        // 本文プレビュー（最大300文字）
+        const preview = (h.body || "（本文なし）").slice(0, 300);
+
+        return `
+          <div class="history-item">
+            <div class="history-item-header" onclick="toggleHistoryItem('${hid}')">
+              <div class="history-item-meta">
+                <div class="history-ver-label">
+                  第${versionNum}版
+                  <span style="font-size:12px;font-weight:400;color:var(--text-muted);margin-left:8px;">
+                    （保存前の状態）
+                  </span>
+                </div>
+                <div class="history-date">🕐 ${dateStr} 時点の内容</div>
+              </div>
+              <div class="history-item-actions">
+                <button class="btn btn-primary" onclick="event.stopPropagation(); confirmRestore('${articleId}', '${hid}', ${versionNum})">
+                  ⏪ この版に戻す
+                </button>
+                <span style="color:var(--text-muted);font-size:18px;line-height:1;">▾</span>
+              </div>
+            </div>
+            <div class="history-item-body" id="hbody-${hid}">
+              <div class="history-preview-label">タイトル</div>
+              <div class="history-preview-text" style="margin-bottom:10px;">${escHtml(h.title || "（なし）")}</div>
+              <div class="history-preview-label">本文プレビュー（先頭300文字）</div>
+              <div class="history-preview-text">${escHtml(preview)}${(h.body || "").length > 300 ? "\n…（以下省略）" : ""}</div>
+            </div>
+          </div>`;
+      }).join("");
+    }
+
+    // 履歴アイテムの折りたたみ切り替え
+    window.toggleHistoryItem = function(hid) {
+      const body = document.getElementById(`hbody-${hid}`);
+      if (body) body.classList.toggle("open");
+    };
+
+    // --------------------------------------------------------
+    // ■ 編集履歴から復元（確認モーダル → 実行）
+    // --------------------------------------------------------
+    let restoreTarget = null; // { articleId, historyId, version }
+
+    window.confirmRestore = function(articleId, historyId, versionNum) {
+      restoreTarget = { articleId, historyId, versionNum };
+      document.getElementById("restore-modal-msg").innerHTML =
+        `第${versionNum}版の内容に戻します。<br>現在の記事内容は新しい履歴として保存され、上書きされます。`;
+      document.getElementById("restore-modal").classList.add("active");
+    };
+
+    window.executeRestore = async function() {
+      if (!restoreTarget) return;
+      document.getElementById("restore-modal").classList.remove("active");
+
+      const { articleId, historyId } = restoreTarget;
+      restoreTarget = null;
+
+      // 履歴データを取得
+      const snap = await get(ref(db, `histories/${articleId}/${historyId}`));
+      const histEntry = snap.val();
+      if (!histEntry) { alert("履歴データが見つかりませんでした。"); return; }
+
+      const now = Date.now();
+
+      // 復元前に現在の記事状態を新しい履歴として保存
+      const currentArticle = state.allArticles[articleId];
+      if (currentArticle) {
+        await saveHistory(articleId, currentArticle, now);
+      }
+
+      // 履歴の内容で記事を上書き（updatedAt は現在時刻）
+      await set(ref(db, `articles/${articleId}`), {
+        title:     histEntry.title   || "",
+        summary:   histEntry.summary || "",
+        body:      histEntry.body    || "",
+        createdAt: currentArticle?.createdAt || now,
+        updatedAt: now,
+      });
+
+      // 記事ページに戻る
+      window.loadArticle(articleId);
+    };
+
+    // --------------------------------------------------------
     // ■ ランダムページに移動
     // 存在する記事IDの中からランダムに1件選んで表示する
     // --------------------------------------------------------
@@ -1846,11 +2327,23 @@
     }
 
     // --------------------------------------------------------
-    // ■ モーダル外クリックで閉じる
+    // ■ 履歴ページから state.currentArticleId にアクセスできるよう公開
+    // （HTMLのonclick属性からstateを直接参照するため）
     // --------------------------------------------------------
-    document.getElementById("delete-modal").addEventListener("click", (e) => {
-      if (e.target === e.currentTarget)
-        document.getElementById("delete-modal").classList.remove("active");
+    window.state = state;
+
+    // --------------------------------------------------------
+    // ■ モーダル外クリックで閉じる（全モーダル共通）
+    // --------------------------------------------------------
+    ["delete-modal", "admin-modal", "restore-modal"].forEach(id => {
+      document.getElementById(id).addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) {
+          e.currentTarget.classList.remove("active");
+          // 各モーダルのクリーンアップ
+          if (id === "delete-modal")  closeDeleteModal();
+          if (id === "admin-modal")   closeAdminModal();
+        }
+      });
     });
 
   </script>
