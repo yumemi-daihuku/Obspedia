@@ -3,377 +3,807 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OBSpedia</title>
+  <title>OBSpedia — なんでも百科事典</title>
 
   <!-- ========================================================
     Google Fonts
-    - "Noto Serif JP": 本文用。Wikipedia的な読みやすい明朝体。
-    - "Shippori Mincho B1": タイトル用の風格ある明朝体。
+    - "Shippori Mincho B1" : ロゴ・見出し用の格調ある明朝体
+    - "Noto Serif JP"       : 本文用の読みやすい明朝体
   ======================================================== -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Shippori+Mincho+B1:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&family=Noto+Serif+JP:wght@300;400;500;700&display=swap" rel="stylesheet" />
 
   <style>
-    /* ========================================================
-      CSS変数 (Design Tokens)
-      色やフォントをここで一元管理。変更時はここだけ編集すればOK。
-    ======================================================== */
+    /* ============================================================
+      ■ CSS変数 (Design Tokens)
+      サイト全体の色・フォントをここで一元管理します。
+      変更したい時はこのブロックの値を書き換えるだけでOKです。
+    ============================================================ */
     :root {
-      --bg:           #f8f5ef;          /* ページ背景：古紙のような温かみのあるオフホワイト */
-      --sidebar-bg:   #f0ece2;          /* サイドバー背景 */
-      --header-bg:    #2c2416;          /* ヘッダー背景：濃い茶色 */
-      --border:       #c8bfa8;          /* ボーダー色 */
-      --border-dark:  #a89880;          /* 強調ボーダー色 */
-      --text-main:    #1a1510;          /* 本文テキスト色 */
-      --text-muted:   #6b5f4e;          /* サブテキスト色 */
-      --link-exists:  #2563eb;          /* 記事リンクあり → 青 */
-      --link-missing: #dc2626;          /* 記事リンクなし → 赤 */
-      --accent:       #8b6914;          /* アクセントカラー（金茶色） */
-      --accent-light: #d4a832;          /* アクセントカラー（明るい） */
-      --white:        #ffffff;
-      --danger:       #c0392b;          /* 削除ボタン等の赤 */
-      --font-serif:   'Noto Serif JP', 'Yu Mincho', serif;
-      --font-title:   'Shippori Mincho B1', 'Yu Mincho', serif;
+      /* --- 色パレット --- */
+      --bg:              #f8f6f0;   /* ページ背景（古紙風オフホワイト） */
+      --bg-content:      #ffffff;   /* コンテンツ背景（白） */
+      --sidebar-bg:      #f2ede3;   /* サイドバー背景 */
+      --header-bg:       #1a1209;   /* ヘッダー背景（深いこげ茶） */
+      --header-border:   #c8a227;   /* ヘッダー下ボーダー（金色） */
+      --border:          #d4cab5;   /* 通常ボーダー */
+      --border-dark:     #b0a080;   /* 強調ボーダー */
+
+      /* --- テキスト色 --- */
+      --text-main:       #1c1710;   /* 本文テキスト */
+      --text-muted:      #7a6e5c;   /* サブテキスト・注釈 */
+      --text-header:     #f5e9c8;   /* ヘッダー内テキスト */
+
+      /* --- リンク色（要件：記事あり→青、なし→赤） --- */
+      --link-exists:     #1a56c4;   /* 内部リンク（記事あり）→ 青 */
+      --link-missing:    #c0392b;   /* 内部リンク（記事なし）→ 赤 */
+      --link-hover:      #0f3d8a;   /* リンクホバー色 */
+
+      /* --- アクセントカラー（金茶色系） --- */
+      --accent:          #9a6f10;   /* メインアクセント */
+      --accent-light:    #c8a227;   /* 明るいアクセント */
+      --accent-pale:     #f5e9c0;   /* 薄いアクセント（背景に使う） */
+
+      /* --- ボタン色 --- */
+      --btn-primary-bg:  #9a6f10;
+      --btn-danger-bg:   #b0291c;
+
+      /* --- フォント --- */
+      --font-serif:  'Noto Serif JP',    'Yu Mincho', '游明朝', serif;
+      --font-title:  'Shippori Mincho B1','Yu Mincho', '游明朝', serif;
     }
 
-    /* ========================================================
-      リセット & 基本スタイル
-    ======================================================== */
+    /* ============================================================
+      ■ リセット & 基本スタイル
+    ============================================================ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
 
     body {
       font-family: var(--font-serif);
       background: var(--bg);
       color: var(--text-main);
       font-size: 15px;
-      line-height: 1.8;
+      line-height: 1.85;
+      min-height: 100vh;
     }
 
-    /* ========================================================
-      ヘッダー
-    ======================================================== */
+    /* ============================================================
+      ■ ヘッダー
+    ============================================================ */
     header {
       background: var(--header-bg);
-      color: var(--white);
-      padding: 0 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 56px;
-      border-bottom: 3px solid var(--accent-light);
+      border-bottom: 3px solid var(--header-border);
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 200;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.4);
     }
 
-    .header-logo {
-      font-family: var(--font-title);
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: 2px;
-      color: var(--accent-light);
+    .header-inner {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 0 20px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* ロゴエリア：「OBSpedia」＋「なんでも百科事典」 */
+    .header-logo-area {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
       cursor: pointer;
       text-decoration: none;
+      flex-shrink: 0;
       user-select: none;
     }
 
-    /* ヘッダー検索バー */
+    .logo-main {
+      font-family: var(--font-title);
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--header-border);          /* 金色 */
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+
+    /* 「なんでも百科事典」の小さいサブテキスト */
+    .logo-sub {
+      font-family: var(--font-serif);
+      font-size: 12px;
+      font-weight: 400;
+      color: #b8a880;
+      letter-spacing: 1.5px;
+      line-height: 1;
+      padding-bottom: 1px;
+    }
+
+    /* ヘッダー中央の検索バー */
     .header-search {
+      flex: 1;
+      max-width: 500px;
       display: flex;
-      gap: 6px;
+      gap: 0;
     }
 
     .header-search input {
-      padding: 6px 12px;
-      border: 1px solid var(--border-dark);
-      border-radius: 3px;
-      background: #3a3020;
-      color: var(--white);
+      flex: 1;
+      padding: 8px 14px;
+      border: 1px solid #4a3e28;
+      border-right: none;
+      border-radius: 4px 0 0 4px;
+      background: #2a2010;
+      color: #f0e8d0;
       font-family: var(--font-serif);
-      font-size: 13px;
-      width: 220px;
+      font-size: 14px;
       outline: none;
-      transition: background 0.2s;
+      transition: background 0.2s, border-color 0.2s;
     }
-    .header-search input::placeholder { color: #9a8c78; }
-    .header-search input:focus { background: #4a4030; }
+    .header-search input::placeholder { color: #7a6a4a; }
+    .header-search input:focus {
+      background: #3a3020;
+      border-color: var(--accent-light);
+    }
 
     .header-search button {
-      padding: 6px 14px;
+      padding: 8px 18px;
       background: var(--accent);
-      color: var(--white);
+      color: #fff;
       border: none;
-      border-radius: 3px;
+      border-radius: 0 4px 4px 0;
       cursor: pointer;
       font-family: var(--font-serif);
-      font-size: 13px;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
       transition: background 0.2s;
+      white-space: nowrap;
     }
     .header-search button:hover { background: var(--accent-light); color: var(--text-main); }
 
-    /* ========================================================
-      メインレイアウト（2カラム）
-    ======================================================== */
+    /* ヘッダー右側のナビボタン */
+    .header-nav {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .header-nav button {
+      padding: 6px 14px;
+      border: 1px solid #4a3e28;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--text-header);
+      cursor: pointer;
+      font-family: var(--font-serif);
+      font-size: 13px;
+      transition: all 0.15s;
+    }
+    .header-nav button:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* ============================================================
+      ■ メインレイアウト（サイドバー + コンテンツ）
+    ============================================================ */
     .layout {
       display: flex;
-      max-width: 1200px;
+      max-width: 1260px;
       margin: 0 auto;
-      min-height: calc(100vh - 56px);
+      min-height: calc(100vh - 61px);
     }
 
     /* ---- サイドバー ---- */
     aside {
-      width: 220px;
+      width: 210px;
       flex-shrink: 0;
       background: var(--sidebar-bg);
       border-right: 1px solid var(--border);
-      padding: 20px 0;
+      padding: 18px 0 40px;
     }
 
-    .sidebar-section { margin-bottom: 24px; }
+    .sidebar-section { margin-bottom: 20px; }
 
-    .sidebar-section h3 {
+    .sidebar-heading {
       font-family: var(--font-title);
-      font-size: 11px;
-      letter-spacing: 2px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
       text-transform: uppercase;
       color: var(--text-muted);
-      padding: 0 16px 6px;
+      padding: 0 14px 8px;
       border-bottom: 1px solid var(--border);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
+    }
+
+    /* サイドバーのナビリンク */
+    .sidebar-nav-item {
+      display: block;
+      padding: 7px 14px;
+      font-size: 13px;
+      color: var(--link-exists);
+      cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: background 0.15s, border-color 0.15s;
+      text-decoration: none;
+    }
+    .sidebar-nav-item:hover {
+      background: #e8e0d0;
+      border-left-color: var(--accent);
+    }
+    .sidebar-nav-item.active {
+      background: #ddd5c0;
+      border-left-color: var(--accent);
+      font-weight: 500;
+      color: var(--text-main);
     }
 
     /* 記事一覧リスト */
     #article-list { list-style: none; }
 
     #article-list li {
-      padding: 6px 16px;
-      cursor: pointer;
+      padding: 6px 14px;
       font-size: 13px;
       color: var(--link-exists);
-      transition: background 0.15s;
+      cursor: pointer;
       border-left: 2px solid transparent;
+      transition: background 0.15s, border-color 0.15s;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    #article-list li:hover { background: #e4ddd0; border-left-color: var(--accent); }
-    #article-list li.active { background: #ddd5c4; border-left-color: var(--accent); font-weight: 600; }
-
-    /* 新規記事作成ボタン */
-    .btn-new-article {
-      display: block;
-      margin: 0 16px;
-      padding: 8px 12px;
-      background: var(--accent);
-      color: var(--white);
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-      font-family: var(--font-serif);
-      font-size: 13px;
-      text-align: center;
-      transition: background 0.2s;
-      width: calc(100% - 32px);
+    #article-list li:hover { background: #e8e0d0; border-left-color: var(--accent); }
+    #article-list li.active {
+      background: #ddd5c0;
+      border-left-color: var(--accent);
+      font-weight: 500;
+      color: var(--text-main);
     }
-    .btn-new-article:hover { background: var(--accent-light); color: var(--text-main); }
 
     /* ---- メインコンテンツ ---- */
     main {
       flex: 1;
-      padding: 28px 36px;
-      max-width: 900px;
+      padding: 32px 40px 60px;
+      min-width: 0; /* flexboxのはみ出し防止 */
     }
 
-    /* ========================================================
-      記事表示エリア
-    ======================================================== */
+    /* ============================================================
+      ■ ページ切り替え（各ページのルート要素）
+      JavaScriptで display を切り替えて画面遷移を実現します
+    ============================================================ */
+    .page { display: none; }
+    .page.active { display: block; }
 
-    /* 記事タイトル */
-    .article-title {
+    /* ============================================================
+      ■ ホームページ
+    ============================================================ */
+
+    /* ホームのヒーローバナー */
+    .home-hero {
+      background: linear-gradient(135deg, #1a1209 0%, #2e2010 50%, #1a1209 100%);
+      border: 1px solid var(--border-dark);
+      border-radius: 6px;
+      padding: 36px 40px;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 背景の装飾パターン */
+    .home-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 20px,
+          rgba(200,162,39,0.04) 20px,
+          rgba(200,162,39,0.04) 21px
+        );
+      pointer-events: none;
+    }
+
+    .home-hero-title {
       font-family: var(--font-title);
-      font-size: 28px;
+      font-size: 36px;
       font-weight: 800;
-      border-bottom: 2px solid var(--border-dark);
-      padding-bottom: 10px;
-      margin-bottom: 18px;
+      color: var(--header-border);
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+      position: relative;
+    }
+
+    .home-hero-sub {
+      font-size: 14px;
+      color: #9a8a68;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    /* ホームの大きい検索バー */
+    .home-search-bar {
+      display: flex;
+      max-width: 540px;
+      position: relative;
+    }
+
+    .home-search-bar input {
+      flex: 1;
+      padding: 12px 18px;
+      border: 2px solid #4a3e28;
+      border-right: none;
+      border-radius: 5px 0 0 5px;
+      background: #0e0b06;
+      color: #f0e8d0;
+      font-family: var(--font-serif);
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .home-search-bar input::placeholder { color: #5a4e38; }
+    .home-search-bar input:focus { border-color: var(--accent-light); }
+
+    .home-search-bar button {
+      padding: 12px 24px;
+      background: var(--accent);
+      color: #fff;
+      border: 2px solid var(--accent);
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+      font-family: var(--font-serif);
+      font-size: 15px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .home-search-bar button:hover {
+      background: var(--accent-light);
+      border-color: var(--accent-light);
       color: var(--text-main);
     }
 
-    /* 記事操作ボタン群（編集・削除） */
-    .article-actions {
-      display: flex;
-      gap: 8px;
+    /* ホームのコンテンツグリッド（最新記事 + サイドウィジェット） */
+    .home-grid {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 28px;
+    }
+
+    /* セクションタイトル */
+    .section-title {
+      font-family: var(--font-title);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-main);
+      border-bottom: 2px solid var(--border-dark);
+      padding-bottom: 8px;
       margin-bottom: 16px;
     }
 
+    /* 最新記事カード一覧 */
+    .article-cards { display: flex; flex-direction: column; gap: 1px; }
+
+    /* 各記事カード */
+    .article-card {
+      background: var(--bg-content);
+      border: 1px solid var(--border);
+      padding: 16px 20px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      position: relative;
+    }
+    .article-card:first-child { border-radius: 5px 5px 0 0; }
+    .article-card:last-child  { border-radius: 0 0 5px 5px; }
+    .article-card:only-child  { border-radius: 5px; }
+    .article-card + .article-card { border-top: none; }
+
+    .article-card:hover {
+      background: #faf7f0;
+      border-color: var(--border-dark);
+    }
+    .article-card:hover .card-title { color: var(--link-hover); }
+
+    /* 記事カード内：タイトル */
+    .card-title {
+      font-family: var(--font-title);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--link-exists);
+      margin-bottom: 5px;
+      transition: color 0.15s;
+    }
+
+    /* 記事カード内：概要テキスト */
+    .card-summary {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      /* 2行で切り捨て */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* 記事カード右上の日付 */
+    .card-date {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* サイドウィジェット */
+    .home-widget {
+      background: var(--bg-content);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 18px 20px;
+      height: fit-content;
+    }
+
+    .widget-title {
+      font-family: var(--font-title);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .widget-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+    .stat-label { color: var(--text-muted); }
+    .stat-value {
+      font-family: var(--font-title);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .widget-btn {
+      display: block;
+      width: 100%;
+      padding: 9px 12px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: var(--font-serif);
+      font-size: 13px;
+      font-weight: 500;
+      text-align: center;
+      margin-top: 14px;
+      transition: background 0.2s;
+    }
+    .widget-btn:hover { background: var(--accent-light); color: var(--text-main); }
+
+    /* ============================================================
+      ■ 検索結果ページ
+    ============================================================ */
+    .search-result-header {
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-dark);
+    }
+
+    .search-result-title {
+      font-family: var(--font-title);
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .search-result-count {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* 検索結果の「記事が見つかりません」バナー */
+    .search-not-found-banner {
+      background: #fff8e8;
+      border: 1px solid #e8c870;
+      border-radius: 5px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-not-found-banner p {
+      font-size: 14px;
+      color: #7a5c10;
+    }
+
+    .search-not-found-banner button {
+      padding: 7px 18px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: var(--font-serif);
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .search-not-found-banner button:hover { background: var(--accent-light); color: var(--text-main); }
+
+    /* 検索結果リスト */
+    .search-result-list { display: flex; flex-direction: column; gap: 1px; }
+
+    /* 各検索結果アイテム（article-cardと似た構造） */
+    .search-result-item {
+      background: var(--bg-content);
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .search-result-item:first-child { border-radius: 5px 5px 0 0; }
+    .search-result-item:last-child  { border-radius: 0 0 5px 5px; }
+    .search-result-item:only-child  { border-radius: 5px; }
+    .search-result-item + .search-result-item { border-top: none; }
+    .search-result-item:hover { background: #faf7f0; border-color: var(--border-dark); }
+
+    .result-title {
+      font-family: var(--font-title);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--link-exists);
+      margin-bottom: 5px;
+    }
+    .result-summary { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+
+    /* 検索キーワードのハイライト */
+    .search-highlight {
+      background: #fff0a0;
+      color: var(--text-main);
+      border-radius: 2px;
+      padding: 0 1px;
+    }
+
+    /* ============================================================
+      ■ 記事閲覧ページ
+    ============================================================ */
+    .article-header {
+      border-bottom: 2px solid var(--border-dark);
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+    }
+
+    .article-title-text {
+      font-family: var(--font-title);
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    /* 記事の操作ボタン（編集・削除） */
+    .article-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ============================================================
+      ■ 共通ボタンスタイル
+    ============================================================ */
     .btn {
-      padding: 5px 14px;
-      border-radius: 3px;
+      padding: 6px 16px;
+      border-radius: 4px;
       border: 1px solid var(--border-dark);
       cursor: pointer;
       font-family: var(--font-serif);
       font-size: 13px;
-      background: var(--white);
+      background: var(--bg-content);
       color: var(--text-main);
       transition: all 0.15s;
+      font-weight: 500;
     }
-    .btn:hover { background: #e8e0d0; }
-    .btn-danger { border-color: var(--danger); color: var(--danger); }
-    .btn-danger:hover { background: var(--danger); color: var(--white); }
-    .btn-primary { background: var(--accent); color: var(--white); border-color: var(--accent); }
-    .btn-primary:hover { background: var(--accent-light); color: var(--text-main); border-color: var(--accent-light); }
-    .btn-secondary { background: #666; color: var(--white); border-color: #666; }
-    .btn-secondary:hover { background: #444; }
+    .btn:hover { background: #ede8dc; }
 
-    /* 記事本文 */
+    .btn-primary {
+      background: var(--btn-primary-bg);
+      color: #fff;
+      border-color: var(--btn-primary-bg);
+    }
+    .btn-primary:hover { background: var(--accent-light); border-color: var(--accent-light); color: var(--text-main); }
+
+    .btn-danger {
+      border-color: var(--btn-danger-bg);
+      color: var(--btn-danger-bg);
+    }
+    .btn-danger:hover { background: var(--btn-danger-bg); color: #fff; }
+
+    .btn-secondary {
+      background: #5a5248;
+      color: #fff;
+      border-color: #5a5248;
+    }
+    .btn-secondary:hover { background: #3a3228; border-color: #3a3228; }
+
+    /* ============================================================
+      ■ 記事本文レンダリング
+    ============================================================ */
     .article-body {
       font-size: 15px;
       line-height: 2;
     }
 
-    /* 本文内の内部リンク（[[記事名]]形式でパース） */
+    .article-body p { margin-bottom: 1em; }
+    .article-body p:last-child { margin-bottom: 0; }
+
+    /* 内部リンク（記事あり） → 青 */
     .wikilink-exists {
       color: var(--link-exists);
       cursor: pointer;
       text-decoration: underline;
-      text-underline-offset: 2px;
+      text-underline-offset: 3px;
     }
-    .wikilink-exists:hover { color: #1d4ed8; }
+    .wikilink-exists:hover { color: var(--link-hover); }
 
+    /* 内部リンク（記事なし） → 赤 */
     .wikilink-missing {
       color: var(--link-missing);
-      cursor: pointer;          /* クリックしても飛ばないが、cursor変更でリンクっぽく見せる */
       text-decoration: underline;
       text-decoration-style: dotted;
-      text-underline-offset: 2px;
+      text-underline-offset: 3px;
+      cursor: default; /* 飛べないのでデフォルトカーソル */
+      title: "この記事はまだ存在しません";
     }
+    .wikilink-missing:hover { opacity: 0.8; }
 
-    /* 本文内の外部リンク（[URL テキスト]形式でパース） */
+    /* 外部リンク */
     .external-link {
       color: var(--link-exists);
       text-decoration: underline;
+      text-underline-offset: 3px;
     }
     .external-link::after {
       content: " ↗";
       font-size: 11px;
-      opacity: 0.7;
+      opacity: 0.65;
     }
+    .external-link:hover { color: var(--link-hover); }
 
-    /* ========================================================
-      フォームエリア（記事の新規作成・編集）
-    ======================================================== */
-    #form-area {
-      display: none; /* デフォルト非表示。showForm()で表示 */
-    }
-
-    .form-title-input {
-      width: 100%;
+    /* ============================================================
+      ■ 記事作成・編集フォームページ
+    ============================================================ */
+    .form-page-title {
       font-family: var(--font-title);
       font-size: 22px;
       font-weight: 600;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border-dark);
+      padding-bottom: 10px;
+    }
+
+    /* 記法ガイドのヒントボックス */
+    .syntax-hint {
+      background: var(--accent-pale);
+      border: 1px solid #d4b840;
+      border-left: 4px solid var(--accent-light);
+      border-radius: 0 4px 4px 0;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #6a5010;
+      margin-bottom: 16px;
+      line-height: 2;
+    }
+    .syntax-hint strong { color: var(--accent); }
+    .syntax-hint code {
+      background: #e8d898;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      letter-spacing: 0.5px;
+    }
+
+    .form-field {
+      width: 100%;
       border: 1px solid var(--border-dark);
       border-radius: 4px;
       padding: 10px 14px;
-      background: var(--white);
-      color: var(--text-main);
-      margin-bottom: 12px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .form-title-input:focus { border-color: var(--accent); }
-
-    /* テキストエリア（本文入力） */
-    .form-body-textarea {
-      width: 100%;
-      min-height: 300px;
       font-family: var(--font-serif);
       font-size: 14px;
-      line-height: 1.8;
-      border: 1px solid var(--border-dark);
-      border-radius: 4px;
-      padding: 12px 14px;
-      background: var(--white);
+      background: var(--bg-content);
       color: var(--text-main);
-      resize: vertical;
       outline: none;
-      transition: border-color 0.2s;
-      margin-bottom: 12px;
-    }
-    .form-body-textarea:focus { border-color: var(--accent); }
-
-    /* 記法説明ヒント */
-    .syntax-hint {
-      background: #f0e8d8;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 10px 14px;
-      font-size: 12px;
-      color: var(--text-muted);
+      transition: border-color 0.2s, box-shadow 0.2s;
       margin-bottom: 14px;
+    }
+    .form-field:focus {
+      border-color: var(--accent-light);
+      box-shadow: 0 0 0 3px rgba(200,162,39,0.15);
+    }
+
+    .form-title-field {
+      font-family: var(--font-title);
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .form-body-field {
+      min-height: 320px;
+      resize: vertical;
       line-height: 1.9;
     }
-    .syntax-hint code {
-      background: #e0d4be;
-      padding: 1px 5px;
-      border-radius: 2px;
-      font-size: 12px;
-      font-family: 'Courier New', monospace;
-    }
 
-    .form-actions { display: flex; gap: 8px; }
+    /* 概要フィールド（本文と見た目を変える） */
+    .form-summary-field { min-height: 80px; resize: vertical; }
 
-    /* ========================================================
-      コメント欄
-    ======================================================== */
-    #comment-section {
+    .form-actions { display: flex; gap: 10px; }
+
+    /* ============================================================
+      ■ コメント欄
+    ============================================================ */
+    .comment-section {
       margin-top: 48px;
       border-top: 2px solid var(--border);
-      padding-top: 24px;
+      padding-top: 28px;
     }
 
     .comment-section-title {
       font-family: var(--font-title);
       font-size: 18px;
       font-weight: 600;
-      margin-bottom: 16px;
-      color: var(--text-main);
+      margin-bottom: 18px;
     }
 
-    /* コメント投稿フォーム */
-    .comment-form {
+    .comment-form-box {
+      background: var(--sidebar-bg);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 16px 18px;
+      margin-bottom: 24px;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      margin-bottom: 24px;
-      background: var(--sidebar-bg);
-      padding: 14px;
-      border-radius: 4px;
-      border: 1px solid var(--border);
     }
 
-    .comment-form input,
-    .comment-form textarea {
-      border: 1px solid var(--border-dark);
-      border-radius: 3px;
-      padding: 8px 12px;
-      font-family: var(--font-serif);
-      font-size: 13px;
-      background: var(--white);
-      color: var(--text-main);
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .comment-form input:focus,
-    .comment-form textarea:focus { border-color: var(--accent); }
-    .comment-form textarea { min-height: 80px; resize: vertical; }
-
-    /* コメント一覧 */
-    .comment-list { display: flex; flex-direction: column; gap: 12px; }
+    .comment-list { display: flex; flex-direction: column; gap: 10px; }
 
     .comment-item {
-      background: var(--white);
+      background: var(--bg-content);
       border: 1px solid var(--border);
       border-radius: 4px;
       padding: 12px 16px;
@@ -384,7 +814,7 @@
       font-size: 13px;
       font-weight: 600;
       color: var(--accent);
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .comment-date {
@@ -393,10 +823,9 @@
       margin-bottom: 6px;
     }
 
-    .comment-body { font-size: 13px; line-height: 1.7; }
+    .comment-body { font-size: 13px; line-height: 1.75; }
 
-    /* コメント削除ボタン */
-    .comment-delete {
+    .comment-delete-btn {
       position: absolute;
       top: 10px;
       right: 12px;
@@ -404,211 +833,347 @@
       border: none;
       color: var(--text-muted);
       cursor: pointer;
-      font-size: 16px;
-      line-height: 1;
+      font-size: 15px;
       padding: 2px 6px;
       border-radius: 3px;
+      line-height: 1;
       transition: all 0.15s;
     }
-    .comment-delete:hover { background: var(--danger); color: var(--white); }
+    .comment-delete-btn:hover { background: var(--btn-danger-bg); color: #fff; }
 
-    /* ========================================================
-      ウェルカム画面（記事未選択時）
-    ======================================================== */
-    #welcome {
-      text-align: center;
-      padding: 80px 20px;
-      color: var(--text-muted);
-    }
-    #welcome h2 {
-      font-family: var(--font-title);
-      font-size: 24px;
-      margin-bottom: 12px;
-      color: var(--accent);
-    }
-
-    /* ========================================================
-      ローディング・空欄状態
-    ======================================================== */
-    .loading {
-      text-align: center;
-      padding: 40px;
-      color: var(--text-muted);
-      font-size: 13px;
-    }
-
-    .empty-msg {
-      text-align: center;
-      padding: 20px;
-      color: var(--text-muted);
-      font-size: 13px;
-      font-style: italic;
-    }
-
-    /* ========================================================
-      モーダル（削除確認ダイアログ）
-    ======================================================== */
+    /* ============================================================
+      ■ 削除確認モーダル
+    ============================================================ */
     .modal-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 200;
+      background: rgba(0,0,0,0.55);
+      z-index: 500;
       align-items: center;
       justify-content: center;
     }
     .modal-overlay.active { display: flex; }
 
     .modal {
-      background: var(--white);
-      border-radius: 6px;
-      padding: 28px 32px;
-      max-width: 400px;
-      width: 90%;
+      background: var(--bg-content);
+      border-radius: 8px;
+      padding: 32px 36px;
+      max-width: 420px;
+      width: 92%;
       text-align: center;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      box-shadow: 0 12px 48px rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
     }
-    .modal h3 { font-family: var(--font-title); margin-bottom: 10px; font-size: 18px; }
-    .modal p { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; }
-    .modal-actions { display: flex; gap: 10px; justify-content: center; }
 
-    /* ========================================================
-      レスポンシブ対応（スマホ）
-    ======================================================== */
-    @media (max-width: 680px) {
+    .modal h3 {
+      font-family: var(--font-title);
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .modal p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+      line-height: 1.8;
+    }
+
+    .modal-actions { display: flex; gap: 12px; justify-content: center; }
+
+    /* ============================================================
+      ■ 汎用ユーティリティ
+    ============================================================ */
+
+    /* ローディング表示 */
+    .loading-msg {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* 空状態メッセージ */
+    .empty-msg {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-style: italic;
+    }
+
+    /* ============================================================
+      ■ レスポンシブ（スマートフォン対応）
+    ============================================================ */
+    @media (max-width: 760px) {
       .layout { flex-direction: column; }
       aside { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
-      main { padding: 16px; }
-      .header-search input { width: 140px; }
+      main { padding: 18px 16px 40px; }
+      .home-grid { grid-template-columns: 1fr; }
+      .home-hero { padding: 24px 20px; }
+      .home-hero-title { font-size: 26px; }
+      .header-inner { flex-wrap: wrap; height: auto; padding: 10px 14px; gap: 10px; }
+      .header-search { max-width: 100%; order: 3; flex: 1 1 100%; }
+      .logo-sub { display: none; } /* スマホでは省略 */
     }
   </style>
 </head>
 <body>
 
-  <!-- ========================================================
-    ヘッダー
-  ======================================================== -->
+  <!-- ============================================================
+    ■ ヘッダー（全ページ共通）
+  ============================================================ -->
   <header>
-    <!-- ロゴクリックでウェルカム画面に戻る -->
-    <span class="header-logo" onclick="showWelcome()">OBSpedia</span>
-    <div class="header-search">
-      <input type="text" id="search-input" placeholder="記事を検索..." onkeydown="if(event.key==='Enter')searchArticle()" />
-      <button onclick="searchArticle()">検索</button>
+    <div class="header-inner">
+
+      <!-- ロゴ：クリックでホームに戻る -->
+      <div class="header-logo-area" onclick="showPage('home')">
+        <span class="logo-main">OBSpedia</span>
+        <span class="logo-sub">なんでも百科事典</span>
+      </div>
+
+      <!-- 検索バー -->
+      <div class="header-search">
+        <input
+          type="text"
+          id="header-search-input"
+          placeholder="記事を検索..."
+          onkeydown="if(event.key==='Enter') performSearch(this.value)"
+        />
+        <button onclick="performSearch(document.getElementById('header-search-input').value)">
+          🔍 検索
+        </button>
+      </div>
+
+      <!-- 右側のナビボタン -->
+      <div class="header-nav">
+        <button onclick="showPage('home')">🏠 ホーム</button>
+        <button onclick="showNewArticleForm()">＋ 新規記事</button>
+      </div>
+
     </div>
   </header>
 
+  <!-- ============================================================
+    ■ メインレイアウト
+  ============================================================ -->
   <div class="layout">
 
-    <!-- ========================================================
-      サイドバー
-    ======================================================== -->
+    <!-- サイドバー -->
     <aside>
       <div class="sidebar-section">
-        <!-- 新規記事作成ボタン -->
-        <button class="btn-new-article" onclick="showNewArticleForm()">＋ 新規記事を作成</button>
+        <div class="sidebar-heading">ナビゲーション</div>
+        <!-- onclick で showPage() を呼ぶ -->
+        <span class="sidebar-nav-item" id="nav-home"   onclick="showPage('home')">🏠 メインページ</span>
+        <span class="sidebar-nav-item" id="nav-search" onclick="showPage('search')" style="display:none;">🔍 検索結果</span>
       </div>
+
       <div class="sidebar-section">
-        <h3>記事一覧</h3>
-        <!-- JavaScriptで動的に記事リストが挿入される -->
+        <div class="sidebar-heading">最近の記事</div>
+        <!-- JavaScriptが記事一覧を動的に挿入する -->
         <ul id="article-list">
-          <li class="loading">読み込み中...</li>
+          <li class="loading-msg" style="padding:10px 14px;font-size:12px;">読み込み中...</li>
         </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-heading">操作</div>
+        <span class="sidebar-nav-item" onclick="showNewArticleForm()">＋ 新規記事を作成</span>
       </div>
     </aside>
 
-    <!-- ========================================================
-      メインコンテンツ
-    ======================================================== -->
+    <!-- メインコンテンツ（ページ切り替えエリア） -->
     <main>
 
-      <!-- ウェルカム画面（初期表示） -->
-      <div id="welcome">
-        <h2>OBSpedia へようこそ</h2>
-        <p>左のサイドバーから記事を選択するか、<br>「新規記事を作成」ボタンで記事を追加してください。</p>
-      </div>
+      <!-- ======================================================
+        【ページ1】ホームページ
+      ====================================================== -->
+      <div id="page-home" class="page active">
 
-      <!-- 記事表示エリア（記事選択後に表示） -->
-      <div id="article-view" style="display:none;">
-        <h1 class="article-title" id="view-title"></h1>
-        <div class="article-actions">
-          <button class="btn btn-primary" onclick="showEditForm()">✏️ 編集</button>
-          <button class="btn btn-danger"  onclick="confirmDeleteArticle()">🗑️ 削除</button>
+        <!-- ヒーローバナー -->
+        <div class="home-hero">
+          <div class="home-hero-title">OBSpedia</div>
+          <div class="home-hero-sub">誰でも編集できる、なんでも百科事典</div>
+          <!-- ホームページ専用の大きい検索バー -->
+          <div class="home-search-bar">
+            <input
+              type="text"
+              id="home-search-input"
+              placeholder="記事名・キーワードで検索..."
+              onkeydown="if(event.key==='Enter') performSearch(this.value)"
+            />
+            <button onclick="performSearch(document.getElementById('home-search-input').value)">
+              検索
+            </button>
+          </div>
         </div>
-        <!-- 本文はJavaScriptで安全にレンダリングされる -->
+
+        <!-- コンテンツグリッド -->
+        <div class="home-grid">
+
+          <!-- 左：最新記事一覧 -->
+          <div>
+            <div class="section-title">📰 最新の記事</div>
+            <!-- JavaScriptが記事カードを挿入する -->
+            <div class="article-cards" id="home-article-cards">
+              <div class="loading-msg">記事を読み込み中...</div>
+            </div>
+          </div>
+
+          <!-- 右：サイドウィジェット -->
+          <div>
+            <div class="home-widget">
+              <div class="widget-title">📊 統計情報</div>
+              <div class="widget-stats">
+                <div class="stat-row">
+                  <span class="stat-label">総記事数</span>
+                  <span class="stat-value" id="stat-article-count">—</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-label">総コメント数</span>
+                  <span class="stat-value" id="stat-comment-count">—</span>
+                </div>
+              </div>
+              <button class="widget-btn" onclick="showNewArticleForm()">＋ 新しい記事を書く</button>
+            </div>
+
+            <div class="home-widget" style="margin-top:16px;">
+              <div class="widget-title">📖 使い方</div>
+              <p style="font-size:13px;color:var(--text-muted);line-height:1.85;">
+                記事を選択して読んだり、<br>
+                「新しい記事を書く」から<br>
+                百科事典に記事を追加できます。<br><br>
+                本文内では <strong style="color:var(--accent);">[[記事名]]</strong> 形式で<br>
+                他の記事へリンクできます。
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /page-home -->
+
+      <!-- ======================================================
+        【ページ2】検索結果ページ
+      ====================================================== -->
+      <div id="page-search" class="page">
+        <div class="search-result-header">
+          <div class="search-result-title" id="search-result-title">検索結果</div>
+          <div class="search-result-count" id="search-result-count"></div>
+        </div>
+
+        <!-- タイトル完全一致の記事がない場合に表示するバナー -->
+        <div class="search-not-found-banner" id="search-not-found-banner" style="display:none;">
+          <p id="search-not-found-msg"></p>
+          <button id="search-create-btn" onclick="">作成する</button>
+        </div>
+
+        <!-- 検索結果リスト（JavaScriptが挿入） -->
+        <div class="search-result-list" id="search-result-list"></div>
+      </div><!-- /page-search -->
+
+      <!-- ======================================================
+        【ページ3】記事閲覧ページ
+      ====================================================== -->
+      <div id="page-article" class="page">
+        <div class="article-header">
+          <h1 class="article-title-text" id="view-title"></h1>
+          <div class="article-actions">
+            <button class="btn btn-primary" onclick="showEditForm()">✏️ 編集する</button>
+            <button class="btn btn-danger"  onclick="confirmDelete()">🗑️ 削除する</button>
+          </div>
+        </div>
+
+        <!-- 本文（WikiテキストをHTMLに変換して描画） -->
         <div class="article-body" id="view-body"></div>
 
         <!-- コメント欄 -->
-        <div id="comment-section">
+        <div class="comment-section">
           <div class="comment-section-title">💬 コメント</div>
-          <div class="comment-form">
-            <input type="text" id="comment-author" placeholder="名前（省略可）" maxlength="50" />
-            <textarea id="comment-body" placeholder="コメントを入力..." maxlength="1000"></textarea>
-            <div>
-              <button class="btn btn-primary" onclick="postComment()">コメントを投稿</button>
+          <div class="comment-form-box">
+            <label class="form-label">名前（省略可）</label>
+            <input class="form-field" type="text" id="comment-author" placeholder="匿名" maxlength="50" style="margin-bottom:0;" />
+            <label class="form-label" style="margin-top:8px;">コメント</label>
+            <textarea class="form-field form-summary-field" id="comment-body" placeholder="コメントを入力..." maxlength="1000" style="margin-bottom:0;"></textarea>
+            <div style="margin-top:4px;">
+              <button class="btn btn-primary" onclick="postComment()">投稿する</button>
             </div>
           </div>
           <div class="comment-list" id="comment-list">
-            <div class="loading">コメントを読み込み中...</div>
+            <div class="loading-msg">コメントを読み込み中...</div>
           </div>
         </div>
-      </div>
+      </div><!-- /page-article -->
 
-      <!-- 記事作成・編集フォーム -->
-      <div id="form-area">
-        <h2 id="form-title-label" style="font-family:var(--font-title);font-size:20px;margin-bottom:16px;"></h2>
+      <!-- ======================================================
+        【ページ4】記事作成・編集フォームページ
+      ====================================================== -->
+      <div id="page-form" class="page">
+        <div class="form-page-title" id="form-page-title">新規記事の作成</div>
 
-        <!-- 記法説明ヒント -->
+        <!-- 記法ガイドのヒントボックス -->
         <div class="syntax-hint">
-          <strong>記法ガイド</strong><br>
-          内部リンク: <code>[[記事名]]</code> — 記事が存在すれば青、なければ赤で表示<br>
-          外部リンク: <code>[https://example.com リンクテキスト]</code> — 外部サイトへのリンク<br>
-          改行: 空行を入れると段落が分かれます
+          <strong>📝 記法ガイド</strong><br>
+          内部リンク: <code>[[記事名]]</code>
+          　— 記事が存在すれば<span style="color:var(--link-exists);">青</span>、
+          なければ<span style="color:var(--link-missing);">赤</span>で表示されます<br>
+          外部リンク: <code>[https://example.com リンクテキスト]</code>
+          　— 外部サイトへのリンクを作れます<br>
+          段落の区切り: 空行（Enterを2回）を入れると段落が分かれます
         </div>
 
-        <input  type="text"     id="form-title" class="form-title-input"    placeholder="記事タイトル" />
-        <textarea               id="form-body"  class="form-body-textarea"  placeholder="本文を入力してください...&#10;&#10;例: [[関連記事]] や [https://example.com サイト名] を使ってリンクを作れます。"></textarea>
+        <label class="form-label">タイトル <span style="color:var(--btn-danger-bg);">*</span></label>
+        <input  class="form-field form-title-field" type="text" id="form-title" placeholder="記事のタイトルを入力" />
+
+        <label class="form-label">概要（一覧・検索結果に表示される短い説明）</label>
+        <textarea class="form-field form-summary-field" id="form-summary" placeholder="記事の概要を1〜2文で入力してください（省略可）"></textarea>
+
+        <label class="form-label">本文</label>
+        <textarea class="form-field form-body-field" id="form-body" placeholder="本文を入力してください...&#10;&#10;例: この記事は [[関連記事]] と関係があります。&#10;詳細は [https://example.com 公式サイト] を参照してください。"></textarea>
 
         <div class="form-actions">
-          <button class="btn btn-primary"   onclick="saveArticle()">💾 保存</button>
+          <button class="btn btn-primary"   onclick="saveArticle()">💾 保存する</button>
           <button class="btn btn-secondary" onclick="cancelForm()">キャンセル</button>
         </div>
-      </div>
+      </div><!-- /page-form -->
 
     </main>
-  </div>
+  </div><!-- /layout -->
 
-  <!-- ========================================================
-    削除確認モーダル
-  ======================================================== -->
+  <!-- ============================================================
+    ■ 削除確認モーダル
+  ============================================================ -->
   <div class="modal-overlay" id="delete-modal">
     <div class="modal">
       <h3>記事を削除しますか？</h3>
-      <p id="delete-modal-msg">この操作は取り消せません。<br>コメントも同時に削除されます。</p>
+      <p id="delete-modal-msg">この操作は取り消せません。<br>記事に付いたコメントも同時に削除されます。</p>
       <div class="modal-actions">
         <button class="btn btn-danger"    onclick="deleteArticle()">削除する</button>
-        <button class="btn btn-secondary" onclick="closeDeleteModal()">キャンセル</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('delete-modal').classList.remove('active')">キャンセル</button>
       </div>
     </div>
   </div>
 
-  <!-- ========================================================
-    Firebase SDK (ESModule形式)
-    Realtime Databaseを使用します。
-  ======================================================== -->
+  <!-- ============================================================
+    ■ Firebase SDK（ESModule形式）
+    Realtime Database を使用します。
+    ※ SDKのバージョンは 10.x 系を使います（旧12系は存在しないため）
+  ============================================================ -->
   <script type="module">
-    // Firebase SDKのインポート
-    import { initializeApp }                        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, set, get, push,
-             remove, onValue, serverTimestamp }     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    // --- Firebase のインポート ---
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getDatabase, ref, set, get, push, remove, onValue
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
     // --------------------------------------------------------
-    // Firebaseの設定と初期化
-    // ※ これらの値はFirebaseコンソールのプロジェクト設定から取得します
+    // ■ Firebase 設定・初期化
+    // databaseURL は Firebaseコンソール → Realtime Database から確認してください
     // --------------------------------------------------------
     const firebaseConfig = {
       apiKey:            "AIzaSyD02GkJNIN3KqsPjMke5j1HsbrTa8Cq8AQ",
       authDomain:        "obspedia-35199.firebaseapp.com",
-      databaseURL:       "https://obspedia-35199-default-rtdb.firebaseio.com", // ← Realtime Database URL
+      databaseURL:       "https://obspedia-35199-default-rtdb.firebaseio.com",
       projectId:         "obspedia-35199",
       storageBucket:     "obspedia-35199.firebasestorage.app",
       messagingSenderId: "832332452504",
@@ -620,190 +1185,348 @@
     const db  = getDatabase(app);
 
     // --------------------------------------------------------
-    // アプリの状態管理
+    // ■ アプリの状態（State）管理
+    // すべての状態をここに集約することで、バグを追いやすくします
     // --------------------------------------------------------
-    let currentArticleId   = null;  // 現在表示中の記事ID
-    let allArticles        = {};    // 全記事のキャッシュ（リンク色判定に使う）
-    let editMode           = false; // false=新規作成, true=編集中
-    let commentUnsubscribe = null;  // コメントのリアルタイムリスナーの解除関数
+    const state = {
+      currentArticleId:   null,     // 現在閲覧中の記事ID
+      editMode:           false,    // false=新規作成 / true=編集中
+      allArticles:        {},       // 全記事データのキャッシュ
+      lastSearchQuery:    "",       // 直近の検索ワード
+      commentUnsubscribe: null,     // コメントリスナーの解除関数
+    };
 
     // --------------------------------------------------------
-    // 記事一覧のリアルタイム購読
-    // onValue() は Realtime Database の変更を自動的に受信する
+    // ■ リアルタイム：記事一覧を常時監視
+    // データが変わるたびに自動でUIに反映されます
     // --------------------------------------------------------
-    const articlesRef = ref(db, "articles");
-    onValue(articlesRef, (snapshot) => {
-      allArticles = snapshot.val() || {};  // 全記事をキャッシュ
-      renderArticleList(allArticles);
+    onValue(ref(db, "articles"), (snapshot) => {
+      state.allArticles = snapshot.val() || {};
+      renderSidebarList(state.allArticles);
+      renderHomeCards(state.allArticles);
+      updateStats(state.allArticles);
 
-      // 現在表示中の記事を再レンダリング（他のユーザーが編集した場合に反映）
-      if (currentArticleId && allArticles[currentArticleId]) {
-        renderArticleView(currentArticleId, allArticles[currentArticleId]);
+      // 閲覧中の記事が他のユーザーに編集された場合、即座に反映
+      if (state.currentArticleId && state.allArticles[state.currentArticleId]) {
+        renderArticleView(state.currentArticleId);
       }
     });
 
     // --------------------------------------------------------
-    // サイドバーの記事一覧を描画
+    // ■ サイドバーの記事リストを描画
     // --------------------------------------------------------
-    function renderArticleList(articles) {
+    function renderSidebarList(articles) {
       const list = document.getElementById("article-list");
-      const ids  = Object.keys(articles);
+      const ids  = getSortedIds(articles);
 
       if (ids.length === 0) {
-        list.innerHTML = '<li class="empty-msg">まだ記事がありません</li>';
+        list.innerHTML = '<li style="padding:8px 14px;font-size:12px;color:var(--text-muted);">まだ記事がありません</li>';
         return;
       }
 
-      // 更新日時の降順でソート
-      ids.sort((a, b) => (articles[b].updatedAt || 0) - (articles[a].updatedAt || 0));
-
-      list.innerHTML = ids.map(id => {
-        const active = id === currentArticleId ? "active" : "";
-        // XSS対策: textContentで安全にエスケープ
-        const title  = escapeHtml(articles[id].title || "無題");
-        return `<li class="${active}" onclick="window.loadArticle('${id}')">${title}</li>`;
+      // 最大10件表示
+      list.innerHTML = ids.slice(0, 10).map(id => {
+        const isActive = id === state.currentArticleId ? "active" : "";
+        return `<li class="${isActive}" onclick="window.loadArticle('${id}')">${escHtml(articles[id].title || "無題")}</li>`;
       }).join("");
     }
 
     // --------------------------------------------------------
-    // 記事の表示
+    // ■ ホームページの「最新の記事」カードを描画
     // --------------------------------------------------------
-    window.loadArticle = function(id) {
-      if (!allArticles[id]) return;
-      currentArticleId = id;
-      editMode = false;
+    function renderHomeCards(articles) {
+      const container = document.getElementById("home-article-cards");
+      const ids       = getSortedIds(articles);
 
-      // UIの切り替え
-      document.getElementById("welcome").style.display   = "none";
-      document.getElementById("form-area").style.display = "none";
-      document.getElementById("article-view").style.display = "block";
+      if (ids.length === 0) {
+        container.innerHTML = `
+          <div class="empty-msg">
+            まだ記事がありません。<br>
+            <span style="cursor:pointer;color:var(--link-exists);text-decoration:underline;"
+                  onclick="showNewArticleForm()">最初の記事を作成しましょう！</span>
+          </div>`;
+        return;
+      }
 
-      renderArticleView(id, allArticles[id]);
-      loadComments(id);
+      container.innerHTML = ids.map(id => {
+        const a       = articles[id];
+        const title   = escHtml(a.title   || "無題");
+        // 概要：設定されていれば使用、なければ本文の先頭を使用
+        const rawSummary = a.summary
+          ? a.summary
+          : (a.body || "").replace(/\[\[([^\]]+)\]\]/g, "$1").replace(/\[https?:\/\/[^\]]+\]/g, "").trim();
+        // カードには最大100文字まで表示
+        const summary = escHtml(rawSummary.slice(0, 100)) + (rawSummary.length > 100 ? "…" : "");
+        const date    = a.updatedAt
+          ? new Date(a.updatedAt).toLocaleDateString("ja-JP", { year:"numeric", month:"short", day:"numeric" })
+          : "";
 
-      // サイドバーのアクティブ状態を更新
-      renderArticleList(allArticles);
-    };
-
-    function renderArticleView(id, article) {
-      document.getElementById("view-title").textContent = article.title || "無題";
-      // 本文をWiki記法でパースしてHTMLに変換
-      document.getElementById("view-body").innerHTML = parseWikiText(article.body || "", allArticles);
+        return `
+          <div class="article-card" onclick="window.loadArticle('${id}')">
+            <div class="card-title">${title}</div>
+            <div class="card-summary">${summary || "（概要なし）"}</div>
+            <div class="card-date">${date}</div>
+          </div>`;
+      }).join("");
     }
 
     // --------------------------------------------------------
-    // Wiki記法パーサー
-    //
-    // 対応記法:
-    //   [[記事名]]         → 内部リンク（記事があれば青、なければ赤）
-    //   [URL テキスト]     → 外部リンク
-    //   空行               → 段落区切り
-    //
-    // セキュリティ: URLはhttps://のみ許可（javascript: などを防ぐ）
+    // ■ 統計情報（記事数・コメント数）を更新
     // --------------------------------------------------------
-    function parseWikiText(text, articles) {
-      // 1. まずHTMLエスケープ（XSS防止）してから記法を処理
-      let html = escapeHtml(text);
+    function updateStats(articles) {
+      document.getElementById("stat-article-count").textContent = Object.keys(articles).length;
+    }
 
-      // 2. 外部リンク: [https://... テキスト]
+    // コメント総数はRealtime Databaseから取得
+    onValue(ref(db, "comments"), (snapshot) => {
+      const comments = snapshot.val() || {};
+      const total    = Object.values(comments).reduce((sum, c) => sum + Object.keys(c).length, 0);
+      document.getElementById("stat-comment-count").textContent = total;
+    });
+
+    // --------------------------------------------------------
+    // ■ 検索処理
+    //
+    // 検索ロジック:
+    //   1. タイトルと概要の両方を検索対象にする
+    //   2. 部分一致（大文字・小文字・全半角を区別しない）
+    //   3. タイトルの「完全一致」がなければ「作成しますか？」バナーを表示
+    //   4. 検索結果ページに遷移（記事に直接飛ばない）
+    // --------------------------------------------------------
+    window.performSearch = function(query) {
+      query = (query || "").trim();
+      if (!query) return;
+
+      // ヘッダーとホームの検索窓を同期
+      document.getElementById("header-search-input").value = query;
+      document.getElementById("home-search-input").value   = query;
+
+      state.lastSearchQuery = query;
+      const qLower = query.toLowerCase();
+
+      // タイトル・概要を対象に部分一致検索
+      const results = Object.entries(state.allArticles).filter(([, article]) => {
+        const titleMatch   = (article.title   || "").toLowerCase().includes(qLower);
+        const summaryMatch = (article.summary || "").toLowerCase().includes(qLower);
+        // 本文も検索対象に含める（任意：不要なら削除可）
+        const bodyMatch    = (article.body    || "").toLowerCase().includes(qLower);
+        return titleMatch || summaryMatch || bodyMatch;
+      });
+
+      // タイトルの「完全一致」チェック（大文字・小文字無視）
+      const exactTitleMatch = Object.values(state.allArticles).some(
+        a => (a.title || "").toLowerCase() === qLower
+      );
+
+      renderSearchResults(query, results, exactTitleMatch);
+      showPage("search");
+    };
+
+    // 検索結果ページの描画
+    function renderSearchResults(query, results, hasExactTitle) {
+      const qEsc = escHtml(query);
+
+      // ページタイトルと件数表示
+      document.getElementById("search-result-title").textContent =
+        `「${query}」の検索結果`;
+      document.getElementById("search-result-count").textContent =
+        `${results.length} 件見つかりました`;
+
+      // --- タイトル完全一致なし → 「作成しますか？」バナー ---
+      const banner  = document.getElementById("search-not-found-banner");
+      const bannerMsg  = document.getElementById("search-not-found-msg");
+      const createBtn  = document.getElementById("search-create-btn");
+
+      if (!hasExactTitle) {
+        banner.style.display = "flex";
+        bannerMsg.textContent = `「${query}」という記事は見つかりませんでした。作成しますか？`;
+        // 「作成する」ボタンを押すと、タイトルに検索ワードを入れた状態でフォームを開く
+        createBtn.onclick = () => showNewArticleForm(query);
+      } else {
+        banner.style.display = "none";
+      }
+
+      // --- 検索結果リスト ---
+      const list = document.getElementById("search-result-list");
+
+      if (results.length === 0) {
+        list.innerHTML = `<div class="empty-msg">一致する記事が見つかりませんでした。</div>`;
+        return;
+      }
+
+      list.innerHTML = results.map(([id, article]) => {
+        const title   = highlightKeyword(escHtml(article.title || "無題"), query);
+        // 概要の生成（設定概要 → 本文の先頭 の優先順）
+        const rawSummary = article.summary
+          ? article.summary
+          : (article.body || "").replace(/\[\[([^\]]+)\]\]/g, "$1").replace(/\[https?:\/\/[^\]]+\]/g, "").trim();
+        const summary = highlightKeyword(escHtml(rawSummary.slice(0, 120)) + (rawSummary.length > 120 ? "…" : ""), query);
+
+        return `
+          <div class="search-result-item" onclick="window.loadArticle('${id}')">
+            <div class="result-title">${title}</div>
+            <div class="result-summary">${summary || "（概要なし）"}</div>
+          </div>`;
+      }).join("");
+    }
+
+    // 検索キーワードを黄色でハイライトするヘルパー
+    function highlightKeyword(html, keyword) {
+      if (!keyword) return html;
+      // エスケープ済みHTMLに対して安全にハイライトをかける
+      const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex   = new RegExp(`(${escaped})`, "gi");
+      return html.replace(regex, '<mark class="search-highlight">$1</mark>');
+    }
+
+    // --------------------------------------------------------
+    // ■ 記事の表示
+    // --------------------------------------------------------
+    window.loadArticle = function(id) {
+      if (!state.allArticles[id]) return;
+      state.currentArticleId = id;
+      state.editMode         = false;
+
+      renderArticleView(id);
+      loadComments(id);
+      showPage("article");
+
+      // サイドバーのアクティブ表示を更新
+      renderSidebarList(state.allArticles);
+    };
+
+    function renderArticleView(id) {
+      const article = state.allArticles[id];
+      if (!article) return;
+      document.getElementById("view-title").textContent  = article.title || "無題";
+      document.getElementById("view-body").innerHTML     = parseWikiText(article.body || "");
+    }
+
+    // --------------------------------------------------------
+    // ■ Wikiテキストパーサー
+    //
+    // 変換ルール:
+    //   [[記事名]]         → 内部リンク（記事あり=青 / なし=赤）
+    //   [https://... 文字] → 外部リンク（新しいタブで開く）
+    //   空行               → 段落区切り <p>
+    //
+    // セキュリティ対策:
+    //   - ユーザー入力は必ず escHtml() でエスケープしてからパース
+    //   - 外部URLは https?:// のみ許可（javascript: 等を排除）
+    // --------------------------------------------------------
+    function parseWikiText(text) {
+      // Step1: HTMLエスケープ（XSS防止のために最初に実施）
+      let html = escHtml(text);
+
+      // Step2: 外部リンク [URL テキスト] → <a>タグ
       html = html.replace(
         /\[((https?:\/\/[^\s\]]+))\s+([^\]]+)\]/g,
         (_, url, _url2, label) => {
-          // セキュリティ: https/httpのみ許可
-          if (!/^https?:\/\//i.test(url)) return escapeHtml(_);
+          if (!/^https?:\/\//i.test(url)) return escHtml(url);
           return `<a href="${url}" class="external-link" target="_blank" rel="noopener noreferrer">${label}</a>`;
         }
       );
 
-      // 3. 内部リンク: [[記事名]]
-      //    記事一覧に存在する場合は青（クリックで遷移）、なければ赤（クリックで何も起きない）
+      // Step3: 内部リンク [[記事名]] → クリッカブルなspan
       html = html.replace(/\[\[([^\]]+)\]\]/g, (_, name) => {
-        const existingId = findArticleByTitle(name, articles);
-        if (existingId) {
-          return `<span class="wikilink-exists" onclick="window.loadArticle('${existingId}')" title="${escapeHtml(name)}">${escapeHtml(name)}</span>`;
+        const existId = findArticleByTitle(name);
+        const escapedName = escHtml(name);
+        if (existId) {
+          // 記事が存在する → 青リンク（クリックで記事に遷移）
+          return `<span class="wikilink-exists" onclick="window.loadArticle('${existId}')" title="${escapedName}">${escapedName}</span>`;
         } else {
-          return `<span class="wikilink-missing" title="「${escapeHtml(name)}」の記事はまだ作成されていません">${escapeHtml(name)}</span>`;
+          // 記事が存在しない → 赤テキスト（クリック不可）
+          return `<span class="wikilink-missing" title="「${escapedName}」の記事はまだ作成されていません">${escapedName}</span>`;
         }
       });
 
-      // 4. 段落区切り（空行 → <p>タグ）
-      html = html.split(/\n\s*\n/).map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("\n");
+      // Step4: 空行で段落分割
+      html = html
+        .split(/\n\s*\n/)
+        .map(para => `<p>${para.replace(/\n/g, "<br>")}</p>`)
+        .join("\n");
 
       return html;
     }
 
-    // タイトル名から記事IDを検索するヘルパー関数
-    function findArticleByTitle(title, articles) {
-      return Object.keys(articles).find(
-        id => articles[id].title?.trim() === title.trim()
+    // 記事タイトルから記事IDを検索する（大文字・小文字・空白を正規化して比較）
+    function findArticleByTitle(title) {
+      const normalized = title.trim().toLowerCase();
+      return Object.keys(state.allArticles).find(
+        id => (state.allArticles[id].title || "").trim().toLowerCase() === normalized
       ) || null;
     }
 
     // --------------------------------------------------------
-    // 記事の保存（新規 / 更新）
+    // ■ 記事の保存（新規作成 / 更新）
     // --------------------------------------------------------
     window.saveArticle = async function() {
-      const title = document.getElementById("form-title").value.trim();
-      const body  = document.getElementById("form-body").value.trim();
+      const title   = document.getElementById("form-title").value.trim();
+      const summary = document.getElementById("form-summary").value.trim();
+      const body    = document.getElementById("form-body").value.trim();
 
-      if (!title) { alert("タイトルを入力してください。"); return; }
+      if (!title) {
+        alert("タイトルを入力してください。");
+        document.getElementById("form-title").focus();
+        return;
+      }
 
-      const now = Date.now(); // serverTimestamp()はオフライン時に動作しないためDate.now()を使用
+      const now = Date.now();
 
-      if (editMode && currentArticleId) {
-        // --- 記事更新 ---
-        const articleRef = ref(db, `articles/${currentArticleId}`);
-        await set(articleRef, {
+      if (state.editMode && state.currentArticleId) {
+        // --- 更新：既存記事IDに上書き保存 ---
+        await set(ref(db, `articles/${state.currentArticleId}`), {
           title,
+          summary,
           body,
+          createdAt: state.allArticles[state.currentArticleId]?.createdAt || now,
           updatedAt: now,
-          // 作成日時は既存の値を引き継ぐ
-          createdAt: allArticles[currentArticleId]?.createdAt || now,
         });
-        window.loadArticle(currentArticleId);
+        window.loadArticle(state.currentArticleId);
       } else {
-        // --- 新規作成: push()で一意なIDを自動生成 ---
+        // --- 新規作成：push() で Firebase がユニークIDを自動生成 ---
         const newRef = push(ref(db, "articles"));
-        await set(newRef, {
-          title,
-          body,
-          createdAt: now,
-          updatedAt: now,
-        });
-        // 作成した記事にジャンプ
+        await set(newRef, { title, summary, body, createdAt: now, updatedAt: now });
         window.loadArticle(newRef.key);
       }
     };
 
     // --------------------------------------------------------
-    // 記事の削除
+    // ■ 記事の削除
     // --------------------------------------------------------
-    window.deleteArticle = async function() {
-      if (!currentArticleId) return;
-      closeDeleteModal();
+    window.confirmDelete = function() {
+      if (!state.currentArticleId) return;
+      const title = state.allArticles[state.currentArticleId]?.title || "この記事";
+      document.getElementById("delete-modal-msg").innerHTML =
+        `「${escHtml(title)}」を削除します。<br>この操作は取り消せません。コメントも同時に削除されます。`;
+      document.getElementById("delete-modal").classList.add("active");
+    };
 
-      // 記事本体とそのコメントを同時に削除
+    window.deleteArticle = async function() {
+      if (!state.currentArticleId) return;
+      document.getElementById("delete-modal").classList.remove("active");
+
+      // 記事とそのコメントを同時削除
       await Promise.all([
-        remove(ref(db, `articles/${currentArticleId}`)),
-        remove(ref(db, `comments/${currentArticleId}`)),
+        remove(ref(db, `articles/${state.currentArticleId}`)),
+        remove(ref(db, `comments/${state.currentArticleId}`)),
       ]);
 
-      currentArticleId = null;
-      showWelcome();
+      state.currentArticleId = null;
+      showPage("home");
     };
 
     // --------------------------------------------------------
-    // コメントの読み込み（リアルタイム）
+    // ■ コメントの読み込み（リアルタイム）
     // --------------------------------------------------------
     function loadComments(articleId) {
-      // 前のリスナーを解除（記事切り替え時にリークしないように）
-      if (commentUnsubscribe) commentUnsubscribe();
+      // 前のリスナーを必ず解除（メモリリーク防止）
+      if (state.commentUnsubscribe) state.commentUnsubscribe();
 
-      const commentsRef = ref(db, `comments/${articleId}`);
-      commentUnsubscribe = onValue(commentsRef, (snapshot) => {
-        const comments = snapshot.val() || {};
-        renderComments(comments);
-      });
+      state.commentUnsubscribe = onValue(
+        ref(db, `comments/${articleId}`),
+        (snapshot) => renderComments(snapshot.val() || {})
+      );
     }
 
     function renderComments(comments) {
@@ -811,151 +1534,143 @@
       const ids  = Object.keys(comments);
 
       if (ids.length === 0) {
-        list.innerHTML = '<div class="empty-msg">まだコメントはありません。最初のコメントを書きましょう！</div>';
+        list.innerHTML = `<div class="empty-msg">まだコメントはありません。最初のコメントを投稿してみましょう！</div>`;
         return;
       }
 
-      // 投稿日時の昇順（古い順）でソート
+      // 投稿日時の昇順でソート（古いものが上）
       ids.sort((a, b) => (comments[a].timestamp || 0) - (comments[b].timestamp || 0));
 
       list.innerHTML = ids.map(id => {
         const c    = comments[id];
-        const date = c.timestamp ? new Date(c.timestamp).toLocaleString("ja-JP") : "";
+        const date = c.timestamp
+          ? new Date(c.timestamp).toLocaleString("ja-JP", { dateStyle:"short", timeStyle:"short" })
+          : "";
         return `
           <div class="comment-item">
-            <div class="comment-author">${escapeHtml(c.author || "匿名")}</div>
+            <div class="comment-author">${escHtml(c.author || "匿名")}</div>
             <div class="comment-date">${date}</div>
-            <div class="comment-body">${escapeHtml(c.body || "").replace(/\n/g, "<br>")}</div>
-            <button class="comment-delete" onclick="window.deleteComment('${id}')" title="削除">✕</button>
-          </div>
-        `;
+            <div class="comment-body">${escHtml(c.body || "").replace(/\n/g, "<br>")}</div>
+            <button class="comment-delete-btn" onclick="window.deleteComment('${id}')" title="削除">✕</button>
+          </div>`;
       }).join("");
     }
 
     // --------------------------------------------------------
-    // コメントの投稿
+    // ■ コメント投稿
     // --------------------------------------------------------
     window.postComment = async function() {
-      if (!currentArticleId) return;
+      if (!state.currentArticleId) return;
       const author = document.getElementById("comment-author").value.trim();
       const body   = document.getElementById("comment-body").value.trim();
 
       if (!body) { alert("コメント本文を入力してください。"); return; }
 
-      const newCommentRef = push(ref(db, `comments/${currentArticleId}`));
-      await set(newCommentRef, {
+      const newRef = push(ref(db, `comments/${state.currentArticleId}`));
+      await set(newRef, {
         author:    author || "匿名",
         body,
         timestamp: Date.now(),
       });
 
-      // 入力欄をクリア
       document.getElementById("comment-author").value = "";
       document.getElementById("comment-body").value   = "";
     };
 
     // --------------------------------------------------------
-    // コメントの削除
+    // ■ コメント削除
     // --------------------------------------------------------
     window.deleteComment = async function(commentId) {
-      if (!currentArticleId) return;
+      if (!state.currentArticleId) return;
       if (!confirm("このコメントを削除しますか？")) return;
-      await remove(ref(db, `comments/${currentArticleId}/${commentId}`));
+      await remove(ref(db, `comments/${state.currentArticleId}/${commentId}`));
     };
 
     // --------------------------------------------------------
-    // 検索機能（タイトルの前方一致/部分一致で検索）
+    // ■ ページ切り替え
+    //
+    // 設計：すべてのページを同一HTML内に持ち、
+    // CSS の display を切り替えることでSPA的な動作を実現します。
+    // ページ遷移のたびにFirebaseに再接続する必要がないため高速です。
     // --------------------------------------------------------
-    window.searchArticle = function() {
-      const query = document.getElementById("search-input").value.trim().toLowerCase();
-      if (!query) return;
+    window.showPage = function(pageName) {
+      // すべてのページを非表示
+      document.querySelectorAll(".page").forEach(el => el.classList.remove("active"));
+      // 指定のページを表示
+      document.getElementById(`page-${pageName}`).classList.add("active");
 
-      const found = Object.entries(allArticles).find(
-        ([, article]) => article.title?.toLowerCase().includes(query)
-      );
-
-      if (found) {
-        window.loadArticle(found[0]);
-        document.getElementById("search-input").value = "";
-      } else {
-        alert(`「${query}」に一致する記事は見つかりませんでした。`);
+      // サイドバーのナビアイテムのアクティブ状態を更新
+      document.querySelectorAll(".sidebar-nav-item").forEach(el => el.classList.remove("active"));
+      const navEl = document.getElementById(`nav-${pageName}`);
+      if (navEl) {
+        navEl.classList.add("active");
+        navEl.style.display = ""; // 検索結果タブが非表示の場合に表示
       }
+
+      // ページに応じてスクロールを先頭に戻す
+      window.scrollTo(0, 0);
     };
 
     // --------------------------------------------------------
-    // UI切り替え関数群
+    // ■ 新規記事フォームを表示
+    // query が指定されている場合（検索から作成）、タイトルに自動入力する
     // --------------------------------------------------------
+    window.showNewArticleForm = function(prefillTitle = "") {
+      state.editMode         = false;
+      state.currentArticleId = null;
+      renderSidebarList(state.allArticles); // アクティブ状態をクリア
 
-    // 新規記事フォームを表示
-    window.showNewArticleForm = function() {
-      editMode = false;
-      currentArticleId = null;
-      renderArticleList(allArticles);  // アクティブ解除
-
-      document.getElementById("welcome").style.display      = "none";
-      document.getElementById("article-view").style.display = "none";
-      document.getElementById("form-area").style.display    = "block";
-      document.getElementById("form-title-label").textContent = "新規記事の作成";
-      document.getElementById("form-title").value = "";
-      document.getElementById("form-body").value  = "";
+      document.getElementById("form-page-title").textContent = "新規記事の作成";
+      document.getElementById("form-title").value   = prefillTitle; // 検索ワードをタイトルに入れる
+      document.getElementById("form-summary").value = "";
+      document.getElementById("form-body").value    = "";
+      showPage("form");
       document.getElementById("form-title").focus();
     };
 
-    // 編集フォームを表示（現在の記事内容を読み込む）
+    // --------------------------------------------------------
+    // ■ 編集フォームを表示
+    // --------------------------------------------------------
     window.showEditForm = function() {
-      if (!currentArticleId || !allArticles[currentArticleId]) return;
-      editMode = true;
-      const article = allArticles[currentArticleId];
+      if (!state.currentArticleId) return;
+      const article = state.allArticles[state.currentArticleId];
+      if (!article) return;
 
-      document.getElementById("article-view").style.display = "none";
-      document.getElementById("form-area").style.display    = "block";
-      document.getElementById("form-title-label").textContent = `「${article.title}」を編集`;
-      document.getElementById("form-title").value = article.title || "";
-      document.getElementById("form-body").value  = article.body  || "";
+      state.editMode = true;
+
+      document.getElementById("form-page-title").textContent = `「${article.title}」を編集`;
+      document.getElementById("form-title").value   = article.title   || "";
+      document.getElementById("form-summary").value = article.summary || "";
+      document.getElementById("form-body").value    = article.body    || "";
+      showPage("form");
     };
 
-    // フォームをキャンセル
+    // --------------------------------------------------------
+    // ■ フォームキャンセル
+    // --------------------------------------------------------
     window.cancelForm = function() {
-      if (editMode && currentArticleId) {
-        window.loadArticle(currentArticleId);  // 元の記事に戻る
+      if (state.editMode && state.currentArticleId) {
+        window.loadArticle(state.currentArticleId); // 元の記事に戻る
       } else {
-        showWelcome();
+        showPage("home");
       }
     };
 
-    // ウェルカム画面に戻る
-    window.showWelcome = function() {
-      currentArticleId = null;
-      if (commentUnsubscribe) commentUnsubscribe();
-      document.getElementById("welcome").style.display      = "block";
-      document.getElementById("article-view").style.display = "none";
-      document.getElementById("form-area").style.display    = "none";
-      renderArticleList(allArticles);
-    };
-
-    // 削除確認モーダルを開く
-    window.confirmDeleteArticle = function() {
-      if (!currentArticleId) return;
-      const title = allArticles[currentArticleId]?.title || "この記事";
-      document.getElementById("delete-modal-msg").textContent =
-        `「${title}」を削除します。この操作は取り消せません。コメントも同時に削除されます。`;
-      document.getElementById("delete-modal").classList.add("active");
-    };
-
-    window.closeDeleteModal = function() {
-      document.getElementById("delete-modal").classList.remove("active");
-    };
-
-    // モーダル外クリックで閉じる
-    document.getElementById("delete-modal").addEventListener("click", (e) => {
-      if (e.target === e.currentTarget) window.closeDeleteModal();
-    });
+    // --------------------------------------------------------
+    // ■ ユーティリティ：日付でソートされた記事IDの配列を返す
+    // --------------------------------------------------------
+    function getSortedIds(articles) {
+      return Object.keys(articles).sort(
+        (a, b) => (articles[b].updatedAt || 0) - (articles[a].updatedAt || 0)
+      );
+    }
 
     // --------------------------------------------------------
-    // ユーティリティ: HTMLエスケープ（XSS防止）
-    // ユーザー入力を安全にHTMLとして表示するための必須処理
+    // ■ ユーティリティ：HTMLエスケープ（XSS防止）
+    // ユーザーが入力したテキストをHTMLとして表示する際は
+    // 必ずこの関数を通してから表示すること
     // --------------------------------------------------------
-    function escapeHtml(str) {
+    function escHtml(str) {
       return String(str)
         .replace(/&/g,  "&amp;")
         .replace(/</g,  "&lt;")
@@ -963,6 +1678,14 @@
         .replace(/"/g,  "&quot;")
         .replace(/'/g,  "&#39;");
     }
+
+    // --------------------------------------------------------
+    // ■ モーダル外クリックで閉じる
+    // --------------------------------------------------------
+    document.getElementById("delete-modal").addEventListener("click", (e) => {
+      if (e.target === e.currentTarget)
+        document.getElementById("delete-modal").classList.remove("active");
+    });
 
   </script>
 </body>
