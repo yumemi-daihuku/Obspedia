@@ -1045,6 +1045,122 @@
     }
 
     /* ============================================================
+      ■ 記事一覧ページ
+    ============================================================ */
+
+    /* ソートボタンバー */
+    .articles-sort-bar {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    /* ソートボタン */
+    .sort-btn {
+      padding: 5px 14px;
+      border: 1px solid var(--border-dark);
+      border-radius: 20px;      /* 丸みを帯びたピル型 */
+      background: var(--bg-content);
+      color: var(--text-muted);
+      font-family: var(--font-serif);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .sort-btn:hover  { border-color: var(--accent); color: var(--accent); }
+    .sort-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* 件数表示テキスト */
+    .articles-count {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    /* ============================================================
+      ■ 最新コメントページ
+    ============================================================ */
+
+    /* コメントカード（記事名付き） */
+    .latest-comment-card {
+      background: var(--bg-content);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+    .latest-comment-card:hover { border-color: var(--border-dark); }
+
+    /* どの記事へのコメントか示すバー */
+    .lc-article-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      background: var(--sidebar-bg);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .lc-article-bar:hover .lc-article-name { text-decoration: underline; }
+
+    .lc-article-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .lc-article-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--link-exists);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* コメント本体部分 */
+    .lc-body {
+      padding: 10px 14px;
+    }
+
+    .lc-meta {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      margin-bottom: 4px;
+    }
+
+    .lc-author {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .lc-date {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .lc-text {
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--text-main);
+      /* 3行で切り捨て */
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* ============================================================
       ■ 管理者パスワード入力モーダル（汎用）
     ============================================================ */
     .admin-modal-icon {
@@ -1202,10 +1318,12 @@
       <div class="sidebar-section">
         <div class="sidebar-heading">ナビゲーション</div>
         <!-- onclick で showPage() を呼ぶ -->
-        <span class="sidebar-nav-item" id="nav-home"   onclick="showPage('home')">🏠 メインページ</span>
-        <span class="sidebar-nav-item" id="nav-search" onclick="showPage('search')" style="display:none;">🔍 検索結果</span>
-        <span class="sidebar-nav-item" id="nav-about"  onclick="showPage('about')">📖 このサイトについて</span>
-        <span class="sidebar-nav-item" id="nav-terms"  onclick="showPage('terms')">📜 利用規約</span>
+        <span class="sidebar-nav-item" id="nav-home"            onclick="showPage('home')">🏠 メインページ</span>
+        <span class="sidebar-nav-item" id="nav-search"          onclick="showPage('search')" style="display:none;">🔍 検索結果</span>
+        <span class="sidebar-nav-item" id="nav-articles"        onclick="showPage('articles')">📋 記事一覧</span>
+        <span class="sidebar-nav-item" id="nav-latest-comments" onclick="showPage('latest-comments')">💬 最新のコメント</span>
+        <span class="sidebar-nav-item" id="nav-about"           onclick="showPage('about')">📖 このサイトについて</span>
+        <span class="sidebar-nav-item" id="nav-terms"           onclick="showPage('terms')">📜 利用規約</span>
       </div>
 
       <div class="sidebar-section">
@@ -1406,7 +1524,52 @@
       </div><!-- /page-history -->
 
       <!-- ======================================================
-        【ページ6】このサイトについて
+        【ページ6】記事一覧
+      ====================================================== -->
+      <div id="page-articles" class="page">
+
+        <div class="article-header">
+          <h1 class="article-title-text">📋 記事一覧</h1>
+        </div>
+
+        <!-- ソートボタン群 -->
+        <div class="articles-sort-bar">
+          <span style="font-size:13px;color:var(--text-muted);margin-right:8px;">並び替え：</span>
+          <button class="sort-btn active" id="sort-btn-date"  onclick="renderArticlesPage('date')">🕐 更新日時順</button>
+          <button class="sort-btn"        id="sort-btn-title" onclick="renderArticlesPage('title')">あ 五十音順</button>
+        </div>
+
+        <!-- 件数表示 -->
+        <div class="articles-count" id="articles-count"></div>
+
+        <!-- 記事カード一覧（JSが挿入） -->
+        <div class="article-cards" id="articles-list">
+          <div class="loading-msg">記事を読み込み中...</div>
+        </div>
+
+      </div><!-- /page-articles -->
+
+      <!-- ======================================================
+        【ページ7】最新のコメント
+      ====================================================== -->
+      <div id="page-latest-comments" class="page">
+
+        <div class="article-header">
+          <h1 class="article-title-text">💬 最新のコメント</h1>
+        </div>
+
+        <!-- コメント総数 -->
+        <div class="articles-count" id="latest-comments-count"></div>
+
+        <!-- コメントカード一覧（JSが挿入） -->
+        <div id="latest-comments-list">
+          <div class="loading-msg">コメントを読み込み中...</div>
+        </div>
+
+      </div><!-- /page-latest-comments -->
+
+      <!-- ======================================================
+        【ページ8】このサイトについて
         ★ 以下の内容は仮のものです。自由に書き換えてください。
       ====================================================== -->
       <div id="page-about" class="page">
@@ -1419,16 +1582,15 @@
 
           <div class="wiki-heading">Obspedia とは</div>
           <p>
-            <strong class="wiki-bold">Obspedia（オブスペディア）</strong>は、性に多感なドスケベクソガキの為に暇を持て余したドスケベが作ったドスケベの為のドスケベ百科です。性への知識を渇望する子供達に引導を渡すために作成しました。<br>
-            英語で「わいせつな」を意味する「obscene」と、「pedia」がサイト名の由来です。
-            記事は全てドスケベな内容でなくてはなりません。性欲に忠実に生きましょう。
+            <strong class="wiki-bold">Obspedia（オブスペディア）</strong>
+            は、性に多感なドスケベクソガキの為に暇を持て余したドスケベが作ったドスケベの為のドスケベ百科です。性への知識を渇望する子供達に引導を渡すために作成しました。<br>
+            英語で「わいせつな」を意味する「obscene」と、「pedia」がサイト名の由来です。 記事は全てドスケベな内容でなくてはなりません。性欲に忠実に生きましょう。
           </p>
 
           <div class="wiki-heading">運営について</div>
           <p>
             このサイトはカイロスが運営しています。<br>
-            記事の内容はユーザーによって自由に投稿・編集されるものであり、
-            運営者がすべての内容を監修しているわけではありません。が、私がドスケベでないと感じた記事は削除させて頂きます。
+            記事の内容はユーザーによって自由に投稿・編集されるものであり、 運営者がすべての内容を監修しているわけではありません。が、私がドスケベでないと感じた記事は削除させて頂きます。
           </p>
 
           <div class="wiki-heading">使用技術</div>
@@ -1438,28 +1600,26 @@
           <p>
             ・フロントエンド: HTML / CSS / JavaScript（バニラ）<br>
             ・データベース: Firebase Realtime Database<br>
-            ・ホスティング: GitHub Pages<br>
-            ・サポート: Claude
+            ・ホスティング: GitHub Pages
           </p>
 
           <div class="wiki-heading">お問い合わせ</div>
           <p>
-            ご意見・ご要望・不具合の報告などは、LINEにて管理者までご連絡ください。
-            
+            ご意見・ご要望・不具合の報告などは、管理者までご連絡ください。<br>
+            LINEやらXのDMやら何でもいいです。
           </p>
 
-           <div class="wiki-heading">運営者からの言葉</div>
+          <div class="wiki-heading">運営者からの言葉</div>
           <p>
-            どうも。カイロスです。本サイトに足を運んで頂きありがとうございます。まぁ......見ての通りイカれた百科事典ですね。
-            本サイトは「性に飢えたクソガキ」を主なターゲット層にしていますが、勿論他の方々も大歓迎です。というか来てください。お願いします。人手が足りないです。<br>
-            まだ自分が下の毛も生えてないようなクソガキだった時は(今もクソガキですが)、「このワードってどういう意味だ」と感じる事が多かったです。調べたいけど調べたのがバレたら終わるというあのもどかしい気持ち。あんな思いをする子供たちを増やすわけにはいきません。
+            どうも。カイロスです。本サイトに足を運んで頂きありがとうございます。まぁ......見ての通りイカれた百科事典ですね。 本サイトは「性に飢えたクソガキ」を主なターゲット層にしていますが、勿論他の方々も大歓迎です。というか来てください。お願いします。人手が足りないです。<br>
+            まだ自分が下の毛も生えてないようなクソガキだった時は(今もクソガキですが)、「このワードってどういう意味だ」と感じる事が多かったです。調べたいけど調べたのがバレたら終わるというあのもどかしい気持ち。あんな思いをする子供たちを増やすわけにはいきません。皆で救いましょう。
           </p>
 
         </div>
       </div><!-- /page-about -->
 
       <!-- ======================================================
-        【ページ7】利用規約
+        【ページ9】利用規約
         ★ 以下の内容は仮のものです。自由に書き換えてください。
       ====================================================== -->
       <div id="page-terms" class="page">
@@ -1471,7 +1631,7 @@
         <div class="article-body">
 
           <p style="font-size:13px;color:var(--text-muted);margin-bottom:1.5em;">
-            最終更新日：2025年4月7日
+            最終更新日：2025年6月7日
           </p>
 
           <div class="wiki-heading">第1条（はじめに）</div>
@@ -1501,7 +1661,7 @@
             ただし、当サイトに掲載することで、管理者は当該コンテンツをサイト上で表示・利用する権利を有するものとします。
           </p>
           <p>
-            管理者は、禁止事項に違反するコンテンツを予告なく削除、編集できるものとします。
+            管理者は、禁止事項に違反するコンテンツを予告なく削除できるものとします。
           </p>
 
           <div class="wiki-heading">第4条（免責事項）</div>
@@ -1723,10 +1883,14 @@
     }
 
     // コメント総数はRealtime Databaseから取得
+    // 同時に「最新のコメント」ページ用データもキャッシュする
     onValue(ref(db, "comments"), (snapshot) => {
       const comments = snapshot.val() || {};
-      const total    = Object.values(comments).reduce((sum, c) => sum + Object.keys(c).length, 0);
+      // 統計情報の更新
+      const total = Object.values(comments).reduce((sum, c) => sum + Object.keys(c).length, 0);
       document.getElementById("stat-comment-count").textContent = total;
+      // 「最新のコメント」ページが表示中ならリアルタイムで再描画
+      renderLatestComments(comments);
     });
 
     // --------------------------------------------------------
@@ -2203,6 +2367,11 @@
         navEl.style.display = ""; // 検索結果タブが非表示の場合に表示
       }
 
+      // 記事一覧ページに切り替わったら最新データで描画
+      if (pageName === "articles") {
+        renderArticlesPage("date"); // デフォルトは更新日時順
+      }
+
       // ページに応じてスクロールを先頭に戻す
       window.scrollTo(0, 0);
     };
@@ -2408,6 +2577,145 @@
       // 記事ページに戻る
       window.loadArticle(articleId);
     };
+
+    // --------------------------------------------------------
+    // ■ 記事一覧ページの描画
+    //
+    // sortMode: 'date'  → 更新日時の新しい順（デフォルト）
+    //           'title' → タイトルの五十音順（localeCompare使用）
+    // --------------------------------------------------------
+    window.renderArticlesPage = function(sortMode = 'date') {
+      const articles = state.allArticles;
+      let ids = Object.keys(articles);
+
+      // ソートボタンのアクティブ状態を切り替える
+      document.getElementById("sort-btn-date").classList.toggle("active",  sortMode === 'date');
+      document.getElementById("sort-btn-title").classList.toggle("active", sortMode === 'title');
+
+      if (sortMode === 'date') {
+        // 更新日時の降順（新しいものが上）
+        ids.sort((a, b) => (articles[b].updatedAt || 0) - (articles[a].updatedAt || 0));
+      } else {
+        // 五十音順（日本語ロケールで自然なソート）
+        ids.sort((a, b) =>
+          (articles[a].title || "").localeCompare(articles[b].title || "", "ja")
+        );
+      }
+
+      // 件数表示
+      document.getElementById("articles-count").textContent =
+        `全 ${ids.length} 件の記事`;
+
+      const container = document.getElementById("articles-list");
+
+      if (ids.length === 0) {
+        container.innerHTML = `
+          <div class="empty-msg">
+            まだ記事がありません。<br>
+            <span style="cursor:pointer;color:var(--link-exists);text-decoration:underline;"
+                  onclick="showNewArticleForm()">最初の記事を作成しましょう！</span>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = ids.map(id => {
+        const a = articles[id];
+        const title = escHtml(a.title || "無題");
+
+        // 概要テキストの生成（Wiki記法をプレーンテキストに変換）
+        const rawSummary = a.summary
+          ? a.summary
+          : (a.body || "")
+              .replace(/\[\[(?:[^\]/]+\/)?([^\]]+)\]\]/g, "$1")
+              .replace(/\[https?:\/\/[^\]]+\]/g, "")
+              .replace(/--([^-]+)--/g, "$1")
+              .replace(/\*\*([^*]+)\*\*/g, "$1")
+              .replace(/`([^`]+)`/g, "$1")
+              .replace(/<[^>]+>/g, "")
+              .trim();
+        const summary = escHtml(rawSummary.slice(0, 100)) + (rawSummary.length > 100 ? "…" : "");
+
+        // 更新日時の表示
+        const date = a.updatedAt
+          ? new Date(a.updatedAt).toLocaleDateString("ja-JP", { year:"numeric", month:"short", day:"numeric" })
+          : "";
+
+        return `
+          <div class="article-card" onclick="window.loadArticle('${id}')">
+            <div class="card-title">${title}</div>
+            <div class="card-summary">${summary || "（概要なし）"}</div>
+            <div class="card-date">${date}</div>
+          </div>`;
+      }).join("");
+    };
+
+    // --------------------------------------------------------
+    // ■ 最新コメントページの描画
+    //
+    // 全記事のコメントをフラット化してタイムスタンプ降順で表示。
+    // どの記事のコメントかも一緒に表示し、クリックでその記事へ遷移できる。
+    // onValue() から呼ばれるため、リアルタイムで更新される。
+    // --------------------------------------------------------
+    function renderLatestComments(allComments) {
+      const countEl = document.getElementById("latest-comments-count");
+      const listEl  = document.getElementById("latest-comments-list");
+      if (!listEl) return; // ページがまだDOMにない場合はスキップ
+
+      // 全コメントをフラット化（どの記事のコメントかも保持）
+      const flat = [];
+      for (const [articleId, commentMap] of Object.entries(allComments)) {
+        for (const [commentId, comment] of Object.entries(commentMap)) {
+          flat.push({ articleId, commentId, ...comment });
+        }
+      }
+
+      // タイムスタンプの降順（新しいものが上）
+      flat.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+      // 件数表示（最大50件まで表示）
+      const LIMIT = 50;
+      const shown = flat.slice(0, LIMIT);
+      if (countEl) {
+        countEl.textContent = flat.length === 0
+          ? ""
+          : `最新 ${shown.length} 件を表示（全 ${flat.length} 件）`;
+      }
+
+      if (flat.length === 0) {
+        listEl.innerHTML = `<div class="empty-msg">まだコメントはありません。</div>`;
+        return;
+      }
+
+      listEl.innerHTML = shown.map(c => {
+        // コメントが属する記事のタイトルを取得（記事が削除済みの場合は「削除された記事」と表示）
+        const article     = state.allArticles[c.articleId];
+        const articleTitle = article ? escHtml(article.title || "無題") : "（削除された記事）";
+        const canLink      = !!article;
+
+        const dateStr = c.timestamp
+          ? new Date(c.timestamp).toLocaleString("ja-JP", { dateStyle:"short", timeStyle:"short" })
+          : "";
+
+        return `
+          <div class="latest-comment-card">
+            <!-- 記事名バー：クリックでその記事へ遷移 -->
+            <div class="lc-article-bar"
+                 onclick="${canLink ? `window.loadArticle('${c.articleId}')` : ""}"
+                 style="${canLink ? "cursor:pointer;" : "cursor:default;"}">
+              <span class="lc-article-label">記事：</span>
+              <span class="lc-article-name">${articleTitle}</span>
+            </div>
+            <!-- コメント本体 -->
+            <div class="lc-body">
+              <div class="lc-meta">
+                <span class="lc-author">${escHtml(c.author || "匿名")}</span>
+                <span class="lc-date">${dateStr}</span>
+              </div>
+              <div class="lc-text">${escHtml(c.body || "").replace(/\n/g, "<br>")}</div>
+            </div>
+          </div>`;
+      }).join("");
+    }
 
     // --------------------------------------------------------
     // ■ ランダムページに移動
