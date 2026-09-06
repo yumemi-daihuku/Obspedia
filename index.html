@@ -1762,6 +1762,9 @@
     import {
       getDatabase, ref, set, get, push, remove, onValue
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import {
+      getAuth, signInWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     // --------------------------------------------------------
     // ■ Firebase 設定・初期化
@@ -1778,8 +1781,22 @@
       measurementId:     "G-47QKFW850T"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db  = getDatabase(app);
+    const app  = initializeApp(firebaseConfig);
+    const db   = getDatabase(app);
+    const auth = getAuth(app);
+
+    // --------------------------------------------------------
+    // ■ 管理者アカウントのメールアドレス
+    //
+    // これは「秘密情報」ではありません（Firebase Authenticationの
+    // ログインIDに過ぎず、これだけでは何も操作できません）。
+    // 実際の認証はFirebaseサーバー側でパスワードと照合されるため、
+    // ここに書かれていても安全です。
+    //
+    // ↓ Firebaseコンソール → Authentication → Users で
+    //   作成した管理者アカウントのメールアドレスに書き換えてください。
+    // --------------------------------------------------------
+    const ADMIN_EMAIL = "yupio5512@gmail.com";
 
     // --------------------------------------------------------
     // ■ アプリの状態（State）管理
@@ -2243,20 +2260,22 @@
     };
 
     // --------------------------------------------------------
-    // ■ 記事の削除（パスワード検証付き）
+    // ■ 記事の削除（Firebase Authenticationによるサーバー側検証）
     //
     // セキュリティ注記：
-    //   パスワードはクライアントサイドでのみ検証しています。
-    //   Firebase Security Rules による保護も別途設定することを推奨します。
-    //   ここでのパスワード管理はアクセス抑止が目的です。
+    //   パスワードはFirebaseサーバー側で検証されます（signInWithEmailAndPassword）。
+    //   クライアントのJSにはパスワード自体が一切含まれないため、
+    //   ソースコードを見られても削除は実行できません。
+    //   実際の権限制御は Firebase Security Rules 側で行ってください
+    //   （".write": "newData.exists() || auth != null" など）。
     // --------------------------------------------------------
-    const ADMIN_PASSWORD = "kairosupassword"; // ← パスワードはここで設定
-
     window.deleteArticle = async function() {
       if (!state.currentArticleId) return;
 
       const inputPw = document.getElementById("delete-pw-input").value;
-      if (inputPw !== ADMIN_PASSWORD) {
+      try {
+        await signInWithEmailAndPassword(auth, ADMIN_EMAIL, inputPw);
+      } catch (e) {
         document.getElementById("delete-pw-error").textContent = "パスワードが違います。";
         document.getElementById("delete-pw-input").value = "";
         document.getElementById("delete-pw-input").focus();
@@ -2438,9 +2457,11 @@
       setTimeout(() => document.getElementById("admin-pw-input").focus(), 100);
     };
 
-    window.submitAdminPassword = function() {
+    window.submitAdminPassword = async function() {
       const inputPw = document.getElementById("admin-pw-input").value;
-      if (inputPw !== ADMIN_PASSWORD) {
+      try {
+        await signInWithEmailAndPassword(auth, ADMIN_EMAIL, inputPw);
+      } catch (e) {
         document.getElementById("admin-pw-error").textContent = "パスワードが違います。";
         document.getElementById("admin-pw-input").value = "";
         document.getElementById("admin-pw-input").focus();
